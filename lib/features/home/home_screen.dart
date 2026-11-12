@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
+import '../sessions/session_setup_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -43,7 +44,16 @@ class HomeScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyLarge,
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
+                FilledButton(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const SessionSetupScreen(),
+                    ),
+                  ),
+                  child: const Text('ابدأ جلسة تجريبية'),
+                ),
+                const SizedBox(height: 24),
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(20),
@@ -51,15 +61,19 @@ class HomeScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'قريبًا في وفاق',
+                          'عن النسخة التجريبية',
                           style: theme.textTheme.titleLarge,
                         ),
                         const SizedBox(height: 12),
-                        const Text('جلسات حوار تناسب اللقاءات والمكالمات.'),
+                        const Text(
+                          'جلسات حوار للقاءات أو أثناء مكالمة خارج التطبيق.',
+                        ),
                         const SizedBox(height: 8),
                         const Text('اختيار المجال والمستوى وعدد الأسئلة.'),
                         const SizedBox(height: 8),
-                        const Text('أسئلة تُراجع قبل نشرها داخل التطبيق.'),
+                        const Text(
+                          'الأسئلة تجريبية ولم تُراجع شرعيًا أو أسريًا بعد.',
+                        ),
                       ],
                     ),
                   ),
