@@ -9,7 +9,7 @@ void main() {
     expect(find.text('حوار يقرّب الفهم'), findsOneWidget);
     await tester.drag(find.byType(ListView), const Offset(0, -500));
     await tester.pumpAndSettle();
-    expect(find.text('هذه نسخة أولية قيد التطوير.'), findsOneWidget);
+    expect(find.textContaining('الأسئلة تجريبية'), findsOneWidget);
     final direction = tester.widget<Directionality>(
       find
           .ancestor(

@@ -25,7 +25,11 @@ void main() {
     await tester.tap(find.text('ابدأ جلسة تجريبية'));
     await tester.pumpAndSettle();
     expect(find.textContaining('لم تُراجع شرعيًا'), findsOneWidget);
-    await tester.ensureVisible(find.text('ابدأ الجلسة'));
+    await tester.scrollUntilVisible(
+      find.text('ابدأ الجلسة'),
+      250,
+      scrollable: find.byType(Scrollable).last,
+    );
     await tester.tap(find.text('ابدأ الجلسة'));
     await tester.pumpAndSettle();
     expect(find.text('السؤال 1 من 3'), findsOneWidget);
@@ -38,6 +42,26 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('الأسئلة المتخطاة: 1'), findsOneWidget);
     expect(find.text('الأسئلة التي انتقلتم منها: 2'), findsOneWidget);
+  });
+  testWidgets('phone mode can be selected from home', (tester) async {
+    await tester.pumpWidget(const WefaqApp());
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('في مكالمة'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.text('في مكالمة'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('افتحوا مكالمة خارج التطبيق، ويقرأ أحدكما الأسئلة.'),
+      250,
+      scrollable: find.byType(Scrollable).last,
+    );
+    expect(
+      find.text('افتحوا مكالمة خارج التطبيق، ويقرأ أحدكما الأسئلة.'),
+      findsOneWidget,
+    );
   });
   testWidgets('back warns before losing progress', (tester) async {
     final navigatorKey = GlobalKey<NavigatorState>();

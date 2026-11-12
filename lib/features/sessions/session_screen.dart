@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/app_theme.dart';
+
 import 'session_data.dart';
 
 class SessionScreen extends StatefulWidget {
@@ -76,14 +78,24 @@ class _SessionScreenState extends State<SessionScreen> {
                       const SizedBox(height: 12),
                       LinearProgressIndicator(
                         value: (progress.index + 1) / progress.questions.length,
+                        minHeight: 8,
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       const SizedBox(height: 24),
                       Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
+                        child: Container(
+                          constraints: const BoxConstraints(minHeight: 240),
+                          padding: const EdgeInsets.all(28),
+                          alignment: Alignment.center,
                           child: Text(
                             progress.questions[progress.index],
-                            style: Theme.of(context).textTheme.headlineSmall,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(
+                                  color: AppTheme.dark,
+                                  fontWeight: FontWeight.bold,
+                                  height: 1.6,
+                                ),
                           ),
                         ),
                       ),
