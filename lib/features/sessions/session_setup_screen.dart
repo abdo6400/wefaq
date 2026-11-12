@@ -52,61 +52,39 @@ class _SessionSetupScreenState extends State<SessionSetupScreen> {
                 _Section(
                   icon: Icons.people_outline,
                   title: 'طريقة الحوار',
-                  child: DropdownButtonFormField<ConversationMode>(
-                    initialValue: mode,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                    ),
-                    items: [
-                      for (final item in ConversationMode.values)
-                        DropdownMenuItem(value: item, child: Text(item.label)),
-                    ],
-                    onChanged: (value) {
-                      if (value != null) setState(() => mode = value);
-                    },
+                  child: _Choices<ConversationMode>(
+                    values: ConversationMode.values,
+                    selected: mode,
+                    label: (value) => value.label,
+                    onChanged: (value) => setState(() => mode = value),
                   ),
                 ),
                 const SizedBox(height: 12),
                 _Section(
                   icon: Icons.category_outlined,
                   title: 'الموضوع',
-                  child: DropdownButtonFormField<Topic>(
-                    initialValue: topic,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                    ),
-                    items: [
-                      for (final item in Topic.values)
-                        DropdownMenuItem(value: item, child: Text(item.label)),
-                    ],
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() {
-                          topic = value;
-                          count = 1;
-                        });
-                      }
-                    },
+                  child: _Choices<Topic>(
+                    values: Topic.values,
+                    selected: topic,
+                    label: (value) => value.label,
+                    onChanged: (value) => setState(() {
+                      topic = value;
+                      count = 1;
+                    }),
                   ),
                 ),
                 const SizedBox(height: 12),
                 _Section(
                   icon: Icons.tune,
                   title: 'عمق الحوار',
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      for (final item in Depth.values)
-                        ChoiceChip(
-                          label: Text(item.label),
-                          selected: depth == item,
-                          onSelected: (_) => setState(() {
-                            depth = item;
-                            count = 1;
-                          }),
-                        ),
-                    ],
+                  child: _Choices<Depth>(
+                    values: Depth.values,
+                    selected: depth,
+                    label: (value) => value.label,
+                    onChanged: (value) => setState(() {
+                      depth = value;
+                      count = 1;
+                    }),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -186,8 +164,12 @@ class _Section extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Card(
     margin: EdgeInsets.zero,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+      side: const BorderSide(color: Color(0xFFE8EDE8)),
+    ),
     child: Padding(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -211,5 +193,45 @@ class _Section extends StatelessWidget {
         ],
       ),
     ),
+  );
+}
+
+class _Choices<T> extends StatelessWidget {
+  const _Choices({
+    required this.values,
+    required this.selected,
+    required this.label,
+    required this.onChanged,
+  });
+  final List<T> values;
+  final T selected;
+  final String Function(T) label;
+  final ValueChanged<T> onChanged;
+  @override
+  Widget build(BuildContext context) => Wrap(
+    spacing: 8,
+    runSpacing: 8,
+    children: [
+      for (final value in values)
+        ChoiceChip(
+          label: Text(label(value)),
+          selected: value == selected,
+          onSelected: (_) => onChanged(value),
+          showCheckmark: false,
+          selectedColor: AppTheme.green,
+          backgroundColor: AppTheme.background,
+          labelStyle: TextStyle(
+            color: value == selected ? Colors.white : AppTheme.dark,
+            fontWeight: FontWeight.w600,
+          ),
+          side: BorderSide(
+            color: value == selected ? AppTheme.green : const Color(0xFFDDE5DF),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        ),
+    ],
   );
 }

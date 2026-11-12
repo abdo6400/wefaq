@@ -72,61 +72,163 @@ class _SessionScreenState extends State<SessionScreen> {
                       ),
                     ]
                   : [
-                      Text(
-                        'السؤال ${progress.index + 1} من ${progress.questions.length}',
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE6EFE9),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Text(
+                              widget.mode.label,
+                              style: const TextStyle(
+                                color: AppTheme.green,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            'السؤال ${progress.index + 1} من ${progress.questions.length}',
+                            style: const TextStyle(
+                              color: AppTheme.muted,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 14),
                       LinearProgressIndicator(
                         value: (progress.index + 1) / progress.questions.length,
-                        minHeight: 8,
+                        minHeight: 6,
                         borderRadius: BorderRadius.circular(8),
+                        backgroundColor: const Color(0xFFE2E9E2),
+                        color: AppTheme.green,
+                      ),
+                      const SizedBox(height: 28),
+                      Container(
+                        constraints: const BoxConstraints(minHeight: 300),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: const Color(0xFFE8EDE8)),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0x0D153E33),
+                              blurRadius: 22,
+                              offset: Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 28,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF5ECDD),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Icon(
+                                Icons.chat_bubble_outline_rounded,
+                                color: AppTheme.gold,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              'مساحة للحوار',
+                              style: Theme.of(context).textTheme.labelLarge
+                                  ?.copyWith(color: AppTheme.muted),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              progress.questions[progress.index],
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(
+                                    color: AppTheme.dark,
+                                    fontWeight: FontWeight.bold,
+                                    height: 1.6,
+                                  ),
+                            ),
+                            const SizedBox(height: 18),
+                            Container(
+                              width: 36,
+                              height: 3,
+                              decoration: BoxDecoration(
+                                color: AppTheme.gold,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF0F4EF),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.spa_outlined,
+                              size: 20,
+                              color: AppTheme.green,
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'خدوا وقتكم. من حق أي طرف تخطي السؤال، والتطبيق لا يسجل إجاباتكما.',
+                                style: TextStyle(color: AppTheme.dark),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 24),
-                      Card(
-                        child: Container(
-                          constraints: const BoxConstraints(minHeight: 240),
-                          padding: const EdgeInsets.all(28),
-                          alignment: Alignment.center,
-                          child: Text(
-                            progress.questions[progress.index],
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headlineSmall
-                                ?.copyWith(
-                                  color: AppTheme.dark,
-                                  fontWeight: FontWeight.bold,
-                                  height: 1.6,
-                                ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton.icon(
+                          onPressed: () =>
+                              setState(() => progress.advance(skipped: false)),
+                          icon: const Icon(Icons.arrow_forward_rounded),
+                          label: Text(
+                            progress.index == progress.questions.length - 1
+                                ? 'إنهاء الجلسة'
+                                : 'التالي',
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'من حق أي طرف تخطي السؤال. لا يسجل التطبيق إجاباتكما.',
-                      ),
-                      const SizedBox(height: 24),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
+                      const SizedBox(height: 10),
+                      Row(
                         children: [
-                          OutlinedButton(
-                            onPressed: progress.index == 0
-                                ? null
-                                : () => setState(progress.previous),
-                            child: const Text('السابق'),
-                          ),
-                          OutlinedButton(
-                            onPressed: () =>
-                                setState(() => progress.advance(skipped: true)),
-                            child: const Text('تخطي'),
-                          ),
-                          FilledButton(
-                            onPressed: () => setState(
-                              () => progress.advance(skipped: false),
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: progress.index == 0
+                                  ? null
+                                  : () => setState(progress.previous),
+                              child: const Text('السابق'),
                             ),
-                            child: Text(
-                              progress.index == progress.questions.length - 1
-                                  ? 'إنهاء الجلسة'
-                                  : 'التالي',
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => setState(
+                                () => progress.advance(skipped: true),
+                              ),
+                              child: const Text('تخطي'),
                             ),
                           ),
                         ],
