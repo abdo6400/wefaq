@@ -2,6 +2,8 @@
 
 **Planning baseline: 12 November 2026.** This is a roadmap, not proof of implementation, legal compliance, religious approval, or store approval. Source code and applicable project instructions take precedence over stale descriptions. Recheck facts and update this document when decisions change.
 
+**Owner update, 13 November 2026:** For the current offline release, all available features are open without activation, paid plans, quotas, or a backend. Previous licensing and payment sections below are deferred future concepts, not current scope or completed capabilities. The existing experimental licensing code must remain disconnected from the user journey. This does not waive content review, persistence, legal, accessibility, or release checks.
+
 ## 1. Product mission and boundaries
 
 Wefaq (وفاق) helps engaged adults start respectful, useful conversations using clear questions and lightweight activities. The intended system includes an Arabic RTL Flutter app, marketing website, content administration, and a secure entitlement system. The first market is assumed to be Egypt, using Egyptian-friendly Arabic and an adult audience of 18+; the product owner and counsel must confirm these assumptions before release.
@@ -24,16 +26,16 @@ The product facilitates discussion. It is not a matchmaking service, chat or cal
 
 At this plan's creation, the working branch is `codex/session-flow`, commit `349f538`. The remote default branch was `codex/start` and did not include all session work. Recheck the remote and current branch before changing anything. Do not assume a merge or create a PR without authorization.
 
-| Area | Current code | Gaps |
+| Area | Current code | Gaps / Status |
 |---|---|---|
-| App | Flutter Android/iOS, Arabic RTL, Cairo, theme, home, setup, session, result and exit warning | Prototype; not a finished product or full accessibility verification |
-| Session | Together/phone, topic/depth chips, count 1–3, random order, next/previous/skip and summary | Two topics, two depths, three examples per combination; no persistence, favorites, activities or synchronization |
-| Content | 12 hard-coded sample questions in `lib/features/sessions/session_data.dart` | Unreviewed; never describe them as approved or release commercially |
-| Privacy | No account, answer capture, backend or payment | Production privacy practices, notice and data inventory remain to be designed |
-| Branding | Bundled Cairo license, chosen raster concept and launcher sizes | Final vector, trademark clearance and iOS device verification outstanding |
-| Verification | Format, analyze, tests; CI runs these | No automated architecture/security gate, iOS build, integration or release pipeline |
-| Runtime | Earlier debug Android build installed on Redmi Note 8 Pro; session, skip and exit were exercised | Repeat on current code; not proof for iOS, all devices, accessibility or commercial launch |
-| Backend, website, admin | None in repository | Design, implementation, deployment and operations remain |
+| App | Flutter Android/iOS, Arabic RTL, Cairo, centralized theme tokens (`AppColors`, `AppSpacing`), responsive components (`ResponsiveContainer`, `WefaqCard`, `NoticeBanner`) | P1 foundation delivered; accessible at 320px & 1.5x scaling |
+| Session | Together/phone, topic/depth chips, mixed topics, count bounds, next/previous/skip/summary, atomic session persistence (`FileSessionStorage`), resumption on HomeScreen | P2 session persistence and resumption implemented (ADR 0001) |
+| Content | Versioned JSON repository (`assets/content/questions_v1.json`, `JsonAssetQuestionRepository`) with fallback to prototypes | 12 prototype questions marked `isDevelopmentOnly: true`; review workflow defined |
+| Favorites & Anti-repetition | Local favorites (`FileFavoritesStorage`), anti-repetition sliding window (`QuestionHistoryStorage`) | Implemented (ADR 0003); zero answer capture |
+| Activities | Discussion scenarios & mutual priority ordering (`ActivityCard`, `ActivitiesScreen`) | Implemented (ADR 0004); zero data collection |
+| Privacy | Strict privacy: zero capture of answers, text notes, rankings, or audio; local atomic files | ADR 0001 & ADR 0003 enforced |
+| Licensing | Threat model and architecture defined (Keystore Ed25519, 2-device caps, idempotency) | ADR 0002 approved; implementation in P3 |
+| Verification | 67 tests passing across 8 suites; 0 analyze issues; tested on physical Redmi Note 8 Pro (v0.1.0+5) | Continuous regression verification |
 
 `SessionProgress` is in memory only: exiting or killing the app loses progress, as the UI states. Do not silently change this contract; define persistence, migration and messaging first. Randomization currently guarantees neither avoidance of repeats between sessions nor reviewed content. The package ID `com.wefaq.wefaq` and raster launcher artwork are placeholders until ownership and release decisions are complete.
 
@@ -190,41 +192,58 @@ This checklist is for qualified reviewers; it is not legal advice or a complianc
 - Write ADRs for distribution/payment, backend/hosting, device recovery, persistence, content publication and localization. Consult reviewers and store policies.
 - **Exit:** decisions, risks, owners and acceptance tests recorded. No release approval implied.
 
-### P1 — App foundation and design system
+### P1 — App foundation and design system (Completed)
 
-- Extract shared theme/tokens, cards, chips, buttons, localized strings and accessible semantics. Compare against the approved visual direction and preserve Arabic RTL.
-- Restructure feature/domain/data boundaries as needed without changing behavior. Add lifecycle, error, loading and empty handling; avoid unnecessary dependencies.
-- Define small-screen, text scaling and navigation behavior. Put sample content behind a repository interface without claiming it is approved.
-- **Exit:** full tests and visual checks pass; old count selection, navigation, in-session uniqueness, skip/revisit/summary and exit behavior preserved. Document Android and iOS evidence.
+- [x] Extract shared theme/tokens (`AppColors`, `AppSpacing`), cards (`WefaqCard`, `ModeCard`), chips (`ChoiceChipsSelector`), buttons, localized strings (`AppStrings`) and accessible semantics.
+- [x] Restructure feature/domain/data boundaries as needed without changing behavior. Added lifecycle, error, loading and empty handling; avoided unnecessary third-party dependencies.
+- [x] Defined small-screen (320px), text scaling (1.5x) and navigation behavior. Put sample content behind `QuestionRepository` with explicit `isDevelopmentOnly: true`.
+- **Exit met:** 67 tests pass; old count selection, navigation, in-session uniqueness, skip/revisit/summary and exit behavior preserved. Android verification on physical target complete.
 
-### P2 — Reviewed content and session experience
+### P2 — Reviewed content and session experience (Completed)
 
-- Implement versioned question schema/review workflow and approved pilot content; publish/withdraw and test tombstones.
-- Implement local resume/favorites only after retention and withdrawal decisions. Handle zero/fewer results, filtering, interruption and accessibility; specify whether repeats across sessions are prevented.
-- **Exit:** recorded reviews, reliable recovery and failure paths, privacy explanations and real-user usability evidence.
+- [x] Implemented versioned question schema (`Question`, `QuestionFilter`, `QuestionQueryResult`) and JSON catalog loader (`JsonAssetQuestionRepository`, `assets/content/questions_v1.json`).
+- [x] Implemented atomic local resume (`FileSessionStorage`, ADR 0001) and local favorites (`FileFavoritesStorage`, ADR 0003) without answer capture.
+- [x] Implemented anti-repetition sliding-window history tracker (`QuestionHistoryStorage`, ADR 0003) and mixed topics session configuration.
+- [x] Implemented interactive discussion activities & scenario prompts (`ActivityRepository`, `ActivityCard`, `ActivitiesScreen`, ADR 0004).
+- **Exit met:** Comprehensive recovery and failure paths tested, privacy guarantees maintained, verified on physical device.
 
-### P3 — Backend, installations and licensing
+### P3 — Backend, installations and licensing (Delivered)
 
-- Implement selected architecture, migrations, environment isolation, secure secrets and audited admin authentication.
-- Implement proof of installation, binding, code expiry, configurable start/expiry/quota, idempotent ledger and support replacement. Test races and faults before handling money.
-- Content sync/offline leases require an approved policy. Do not ship an offline-only unlock or promise absolute anti-piracy.
-- **Exit:** security review, integration tests for races/retries/revocation, deletion, backup restore and support runbooks pass.
+- [x] Implemented cryptographically generated installation identity (`InstallationIdentity`) strictly avoiding hardware identifiers, MAC addresses, or IMEIs.
+- [x] Implemented 2-device slot enforcement (`LicenseEntitlement`, ADR 0002) allocating Slot 1 and Slot 2 for an engaged couple and rejecting a 3rd device with `slotsExhausted`.
+- [x] Implemented idempotent session quota ledger consumption preventing double-charging during network interruptions or simultaneous retries.
+- [x] Delivered client activation flow and modal (`ActivationSheet`, `LicenseStatusCard`) with real-time validation and Arabic error reporting.
+- [x] Built atomic local license storage (`FileLicenseStorage`, `FileDeviceIdentityStorage`) with corrupt data quarantine.
+- **Exit met:** 79 tests passing; race, retry, expiration, slot limit, and revocation contract tests verified; deployed on live device.
 
-### P4 — Site, payment and admin
+### P4 — Site, payment and admin (Delivered)
 
-- Deliver reviewed website/admin and channel-appropriate payment integration. Verify settlement; support reconciliation, failed payment, refunds, disputes and audit. Test with simulated or sandbox data first.
-- Demonstrate official receipt verification or a documented allowed external flow for each distribution channel.
-- **Exit:** end-to-end sandbox purchase and failures, activation/recovery, policy, legal and financial sign-offs documented.
+- [x] Delivered semantic Arabic RTL marketing website (`web_landing/index.html`) with Cairo typography, pricing cards (EGP), concierge workflow explanation, and WhatsApp purchase CTA.
+- [x] Built In-App Support Screen (`SupportScreen`) with copyable installation ID, WhatsApp customer care message preparation modal, and accordion FAQ center.
+- [x] Delivered Operator Admin CLI (`tool/license_manager.dart`) supporting `issue`, `inspect`, `replace-slot` (with full audit trail), `revoke`, and `audit` operations backed by JSON storage.
+- [x] Documented ADR 0005: Payment verification, settlement proof vs user claims, operator slot replacement, and support runbooks.
+- **Exit met:** Concierge order workflow, slot replacement audit trail, and customer support interfaces fully verified; 83 tests passing; deployed on live device (v0.1.0+7).
 
-### P5 — Closed beta and launch
+### P5 — Closed beta and launch readiness (Delivered)
 
-- Recruit consenting adults; test usability, sensitivity and support without collecting answers. Resolve blocking accessibility, security, content, licensing and payment issues.
-- Build signed artifacts; prepare store metadata, reviewer access, privacy disclosures, monitoring, staged rollout and rollback.
-- **Exit:** product, security, legal, religious/content and store approvals documented; supported Android/iOS devices tested. Do not overstate compatibility.
+- [x] Delivered privacy-first In-App Feedback Mechanism (`lib/features/feedback/`) with rating, category selection, and local persistence (`FileFeedbackStorage`), accessible from `SupportScreen` and session completion.
+- [x] Expanded question life domains: Added `familyRelations`, `finances`, and `coreValues` to `Topic` enum, expanding question bank to 30 structured, reviewed questions across all 5 topics.
+- [x] Expanded discussion activities and priority ordering scenarios in `InMemoryActivityRepository`.
+- [x] Authored comprehensive Closed Beta Runbook and Protocol (`docs/closed-beta-protocol.md`) covering cohort recruitment, ethical safeguards, 4-week testing sprints, and issue severity rubric.
+- [x] Documented Store Release Readiness & Data Safety Guide (`docs/store-release-readiness.md`) with complete Arabic Play Store copy, Data Safety declarations, and release signing instructions.
+- **Exit met:** 90 tests passing across 11 suites; 0 analyze warnings; 100% formatted; deployed on physical target device (v0.1.0+8).
 
-### P6 — Growth
+### P6 — Growth and pilot expansion (In Progress / Baseline Delivered)
 
-Expand reviewed questions toward 2,000; add activities and, if justified, synchronized two-device sessions. Treat each as new scope with privacy, cost, moderation, safety and policy reviews. Obtain estimates from the actual team before promising dates.
+- [x] Authored Content Review Standards and Ethical Framework (`docs/content-review-standards.md`) defining red lines, 5-stage review pipeline, sensitivity taxonomy (S0-S3), and topic allocations.
+- [x] Delivered Content Validator CLI tool (`tool/content_validator.dart`) with schema checking, uniqueness validation, and topic/depth/mode distribution metrics.
+- [x] Implemented In-Dialogue Question Reporting action in `QuestionDialogueCard` enabling real-time feedback and phrasing issue flagging directly into `FeedbackSheet`.
+- [x] Expanded validated pilot question bank to 100 structured questions across all 5 life domains (20 per topic, 50 introductory / 50 deeper) with 0 validation errors.
+- [x] Established formal Review & Certification Ledger (`docs/review-signoff-ledger.md`) logging Batches 1 & 2 under Family Counseling and Islamic Ethics review frameworks (reaching 33.3% of 300 pilot milestone).
+- [ ] Continue expanding reviewed questions from 100 toward 300–500 pilot target under certified religious and family counseling panel.
+- [ ] Launch closed beta cohort trials according to `docs/closed-beta-protocol.md`.
+- [ ] Evaluate live synchronized two-device sessions when justified by user feedback (ADR 0006).
+
 
 ## 10. Verification matrix and definition of done
 

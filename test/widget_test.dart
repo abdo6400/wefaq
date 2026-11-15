@@ -6,10 +6,9 @@ void main() {
   testWidgets('shows Arabic right-to-left landing screen', (tester) async {
     await tester.pumpWidget(const WefaqApp());
     await tester.pumpAndSettle();
+
     expect(find.text('حوار يقرّب الفهم'), findsOneWidget);
-    await tester.drag(find.byType(ListView), const Offset(0, -500));
-    await tester.pumpAndSettle();
-    expect(find.textContaining('الأسئلة تجريبية'), findsOneWidget);
+
     final direction = tester.widget<Directionality>(
       find
           .ancestor(
@@ -19,5 +18,13 @@ void main() {
           .first,
     );
     expect(direction.textDirection, TextDirection.rtl);
+
+    await tester.scrollUntilVisible(
+      find.textContaining('الأسئلة تجريبية'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(find.textContaining('الأسئلة تجريبية'), findsOneWidget);
   });
 }

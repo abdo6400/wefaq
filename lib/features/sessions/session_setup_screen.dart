@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
-import '../../core/app_theme.dart';
+import '../../core/strings/app_strings.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/notice_banner.dart';
+import '../../core/widgets/wefaq_card.dart';
+import '../../core/widgets/wefaq_page_header.dart';
+import '../favorites/domain/repositories/favorites_storage.dart';
+import 'presentation/widgets/choice_chips_selector.dart';
+import 'presentation/widgets/setup_section.dart';
 import 'session_data.dart';
 import 'session_screen.dart';
 
@@ -8,140 +16,498 @@ class SessionSetupScreen extends StatefulWidget {
   const SessionSetupScreen({
     super.key,
     this.initialMode = ConversationMode.together,
+    this.initialTopic = Topic.communication,
+    this.repository,
+    this.storage,
+    this.favoritesStorage,
+    this.historyStorage,
   });
+
   final ConversationMode initialMode;
+  final Topic? initialTopic;
+  final QuestionRepository? repository;
+  final SessionStorage? storage;
+  final FavoritesStorage? favoritesStorage;
+  final QuestionHistoryStorage? historyStorage;
+
   @override
   State<SessionSetupScreen> createState() => _SessionSetupScreenState();
 }
 
 class _SessionSetupScreenState extends State<SessionSetupScreen> {
   late ConversationMode mode = widget.initialMode;
-  Topic topic = Topic.communication;
+  late Topic? topic = widget.initialTopic;
   Depth depth = Depth.introductory;
   int count = 3;
+  late final QuestionRepository _repository =
+      widget.repository ?? InMemoryQuestionRepository();
+
+  List<Question> _available = [];
+  int _loadGeneration = 0;
+  bool _loading = true;
+  bool _starting = false;
+  bool _loadFailed = false;
+  bool _avoidRepeats = false;
+  int _totalMatching = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAvailable();
+  }
+
+  Future<void> _loadAvailable() async {
+    final generation = ++_loadGeneration;
+    setState(() {
+      _loading = true;
+      _loadFailed = false;
+    });
+    try {
+      final result = await _repository.getQuestions(
+        topic: topic,
+        depth: depth,
+        mode: mode,
+      );
+      final seen = _avoidRepeats && widget.historyStorage != null
+          ? await widget.historyStorage!.getRecentlyAskedIds()
+          : <String>{};
+      final eligible = result.where((q) => !seen.contains(q.id)).toList();
+      if (!mounted || generation != _loadGeneration) return;
+      setState(() {
+        _totalMatching = result.length;
+        _available = eligible;
+        if (eligible.isNotEmpty && count > eligible.length) {
+          count = eligible.length;
+        }
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted || generation != _loadGeneration) return;
+      setState(() {
+        _available = [];
+        _loading = false;
+        _loadFailed = true;
+      });
+    }
+  }
+
+  void _onTopicChanged(Topic? value) {
+    setState(() {
+      topic = value;
+      count = 1;
+    });
+    _loadAvailable();
+  }
+
+  void _onDepthChanged(Depth value) {
+    setState(() {
+      depth = value;
+      count = 1;
+    });
+    _loadAvailable();
+  }
+
+  Future<void> _startSession() async {
+    if (_starting) return;
+    setState(() => _starting = true);
+    try {
+      final history = widget.historyStorage;
+      final all = await _repository.getQuestions(
+        topic: topic,
+        depth: depth,
+        mode: mode,
+      );
+      final seen = _avoidRepeats && history != null
+          ? await history.getRecentlyAskedIds()
+          : <String>{};
+      final eligible = all.where((q) => !seen.contains(q.id)).toList()
+        ..shuffle();
+      if (!mounted) return;
+      if (eligible.length < count) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'عدد الأسئلة المتاحة تغيّر. راجع اختياراتك وحاول مجددًا.',
+            ),
+          ),
+        );
+        _loadAvailable();
+        return;
+      }
+      final selected = eligible.take(count).toList();
+      if (history != null) {
+        await history.recordAskedQuestions(selected.map((q) => q.id).toList());
+      }
+      if (!mounted) return;
+
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => SessionScreen.fromQuestions(
+            items: selected,
+            mode: mode,
+            storage: widget.storage,
+            favoritesStorage: widget.favoritesStorage,
+          ),
+        ),
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تعذر بدء الجلسة. حاول مرة أخرى.')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _starting = false);
+        _loadAvailable();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final questions = sampleQuestions[topic]![depth]!;
+    final questions = _available;
+    final totalAvailable = questions.length;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final horizontalPadding = screenWidth < 360
+        ? AppSpacing.lg
+        : AppSpacing.xxl;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('إعداد الجلسة')),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 560),
+            constraints: const BoxConstraints(
+              maxWidth: AppSpacing.maxContentWidth,
+            ),
             child: ListView(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
               children: [
-                Text(
-                  'خلّوا الحوار على راحتكم',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: AppTheme.dark,
-                    fontWeight: FontWeight.bold,
+                WefaqPageHeader(
+                  leading: IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(
+                      Icons.arrow_back_rounded,
+                      color: AppColors.surfaceWhite,
+                    ),
                   ),
+                  badgeText: '$count سؤال',
+                  tagline: AppStrings.setupTitle,
+                  title: AppStrings.setupHeader,
+                  subtitle: AppStrings.setupSubheader,
                 ),
-                const SizedBox(height: 6),
-                const Text(
-                  'اختاروا التفاصيل المناسبة لكم.',
-                  style: TextStyle(color: AppTheme.muted),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'أسئلة تجريبية للاختبار فقط، لم تُراجع شرعيًا أو أسريًا بعد.',
-                  style: TextStyle(color: AppTheme.muted),
-                ),
-                const SizedBox(height: 16),
-                _Section(
-                  icon: Icons.people_outline,
-                  title: 'طريقة الحوار',
-                  child: _Choices<ConversationMode>(
-                    values: ConversationMode.values,
-                    selected: mode,
-                    label: (value) => value.label,
-                    onChanged: (value) => setState(() => mode = value),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
+                    vertical: AppSpacing.lg,
                   ),
-                ),
-                const SizedBox(height: 12),
-                _Section(
-                  icon: Icons.category_outlined,
-                  title: 'الموضوع',
-                  child: _Choices<Topic>(
-                    values: Topic.values,
-                    selected: topic,
-                    label: (value) => value.label,
-                    onChanged: (value) => setState(() {
-                      topic = value;
-                      count = 1;
-                    }),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                _Section(
-                  icon: Icons.tune,
-                  title: 'عمق الحوار',
-                  child: _Choices<Depth>(
-                    values: Depth.values,
-                    selected: depth,
-                    label: (value) => value.label,
-                    onChanged: (value) => setState(() {
-                      depth = value;
-                      count = 1;
-                    }),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                _Section(
-                  icon: Icons.format_list_numbered,
-                  title: 'عدد الأسئلة',
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      IconButton(
-                        onPressed: count > 1
-                            ? () => setState(() => count--)
-                            : null,
-                        tooltip: 'تقليل عدد الأسئلة',
-                        icon: const Icon(Icons.remove_circle_outline),
+                      const NoticeBanner(
+                        message: AppStrings.sampleNoticeSetup,
+                        icon: Icons.info_outline,
+                        style: NoticeStyle.warning,
                       ),
-                      Text(
-                        '$count',
-                        style: Theme.of(context).textTheme.titleLarge,
+                      const SizedBox(height: AppSpacing.md),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final isWide = constraints.maxWidth >= 340;
+                          final modeCard = SetupSection(
+                            icon: Icons.people_outline,
+                            title: AppStrings.setupSectionMode,
+                            child: ChoiceChipsSelector<ConversationMode>(
+                              values: ConversationMode.values,
+                              selected: mode,
+                              label: (value) => value.label,
+                              onChanged: (value) {
+                                setState(() => mode = value);
+                                _loadAvailable();
+                              },
+                            ),
+                          );
+                          final depthCard = SetupSection(
+                            icon: Icons.tune,
+                            title: AppStrings.setupSectionDepth,
+                            child: ChoiceChipsSelector<Depth>(
+                              values: Depth.values,
+                              selected: depth,
+                              label: (value) => value.label,
+                              onChanged: _onDepthChanged,
+                            ),
+                          );
+                          if (isWide) {
+                            return IntrinsicHeight(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Expanded(child: modeCard),
+                                  const SizedBox(width: AppSpacing.md),
+                                  Expanded(child: depthCard),
+                                ],
+                              ),
+                            );
+                          }
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              modeCard,
+                              const SizedBox(height: AppSpacing.md),
+                              depthCard,
+                            ],
+                          );
+                        },
                       ),
-                      IconButton(
-                        onPressed: count < questions.length
-                            ? () => setState(() => count++)
-                            : null,
-                        tooltip: 'زيادة عدد الأسئلة',
-                        icon: const Icon(Icons.add_circle_outline),
+                      const SizedBox(height: AppSpacing.md),
+                      SetupSection(
+                        icon: Icons.category_outlined,
+                        title: AppStrings.setupSectionTopic,
+                        child: ChoiceChipsSelector<Topic?>(
+                          values: [...Topic.values, null],
+                          selected: topic,
+                          label: (value) =>
+                              value?.label ?? AppStrings.topicMixed,
+                          onChanged: _onTopicChanged,
+                        ),
                       ),
-                      const Spacer(),
-                      Flexible(
-                        child: Text(
-                          'المتاح ${questions.length}',
-                          style: const TextStyle(color: AppTheme.muted),
+                      const SizedBox(height: AppSpacing.md),
+                      SetupSection(
+                        icon: Icons.format_list_numbered,
+                        title: AppStrings.setupSectionCount,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppStrings.quickCount,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: AppColors.muted),
+                            ),
+                            const SizedBox(height: AppSpacing.sm),
+                            Wrap(
+                              spacing: AppSpacing.sm,
+                              runSpacing: AppSpacing.sm,
+                              children: [
+                                for (final value in const [5, 10, 20, 30, 50])
+                                  ChoiceChip(
+                                    label: Text('$value'),
+                                    selected: count == value,
+                                    showCheckmark: false,
+                                    selectedColor: AppColors.green,
+                                    backgroundColor: AppColors.background,
+                                    side: BorderSide(
+                                      color: count == value
+                                          ? AppColors.green
+                                          : AppColors.chipBorder,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        AppSpacing.radiusPill,
+                                      ),
+                                    ),
+                                    labelStyle: TextStyle(
+                                      color: count == value
+                                          ? AppColors.surfaceWhite
+                                          : AppColors.dark,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    onSelected:
+                                        !_loading && value <= totalAvailable
+                                        ? (_) => setState(() => count = value)
+                                        : null,
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            Wrap(
+                              spacing: AppSpacing.md,
+                              runSpacing: AppSpacing.sm,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: AppSpacing.xs,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.background,
+                                    borderRadius: BorderRadius.circular(
+                                      AppSpacing.radiusPill,
+                                    ),
+                                    border: Border.all(
+                                      color: AppColors.chipBorder,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        onPressed: count > 1
+                                            ? () => setState(() => count--)
+                                            : null,
+                                        tooltip:
+                                            AppStrings.decreaseQuestionsTooltip,
+                                        color: AppColors.green,
+                                        icon: const Icon(
+                                          Icons.remove_circle_outline,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: AppSpacing.sm,
+                                        ),
+                                        child: Text(
+                                          '$count',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge
+                                              ?.copyWith(
+                                                color: AppColors.dark,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: count < totalAvailable
+                                            ? () => setState(() => count++)
+                                            : null,
+                                        tooltip:
+                                            AppStrings.increaseQuestionsTooltip,
+                                        color: AppColors.green,
+                                        icon: const Icon(
+                                          Icons.add_circle_outline,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: AppSpacing.md,
+                                    vertical: AppSpacing.sm,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.tagBackground,
+                                    borderRadius: BorderRadius.circular(
+                                      AppSpacing.radiusPill,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    '${AppStrings.availableCountPrefix} $totalAvailable',
+                                    style: const TextStyle(
+                                      color: AppColors.green,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      SetupSection(
+                        icon: Icons.history_rounded,
+                        title: AppStrings.newQuestionsTitle,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Material(
+                              color: Colors.transparent,
+                              child: SwitchListTile.adaptive(
+                                contentPadding: EdgeInsets.zero,
+                                title: const Text(
+                                  AppStrings.avoidPreviousQuestions,
+                                ),
+                                value: _avoidRepeats,
+                                onChanged: widget.historyStorage == null
+                                    ? null
+                                    : (value) {
+                                        setState(() => _avoidRepeats = value);
+                                        _loadAvailable();
+                                      },
+                              ),
+                            ),
+                            Text(
+                              widget.historyStorage == null
+                                  ? AppStrings.historyUnavailable
+                                  : AppStrings.historyExplanation,
+                              style: const TextStyle(color: AppColors.muted),
+                            ),
+                            if (_avoidRepeats && !_loading && !_loadFailed)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  top: AppSpacing.xs,
+                                ),
+                                child: Text(
+                                  AppStrings.newQuestionCount(
+                                    totalAvailable,
+                                    _totalMatching,
+                                  ),
+                                  style: const TextStyle(
+                                    color: AppColors.green,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      if (mode == ConversationMode.phone)
+                        const Padding(
+                          padding: EdgeInsets.only(top: AppSpacing.md),
+                          child: NoticeBanner(
+                            message: AppStrings.phoneNotice,
+                            icon: Icons.phone_outlined,
+                            style: NoticeStyle.info,
+                          ),
+                        ),
+                      const SizedBox(height: AppSpacing.xl),
+                      WefaqCard(
+                        hasShadow: true,
+                        backgroundColor: AppColors.tagBackground,
+                        borderColor: AppColors.chipBorder,
+                        padding: const EdgeInsets.all(AppSpacing.lg),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (_loading)
+                              const Center(child: CircularProgressIndicator())
+                            else if (_loadFailed)
+                              TextButton(
+                                onPressed: _loadAvailable,
+                                child: const Text(
+                                  'تعذر تحميل الأسئلة. اضغط لإعادة المحاولة.',
+                                ),
+                              )
+                            else if (totalAvailable == 0)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: AppSpacing.sm,
+                                ),
+                                child: Text(
+                                  _avoidRepeats
+                                      ? AppStrings.noNewQuestions
+                                      : 'لا توجد أسئلة متاحة لهذه الاختيارات.',
+                                  style: const TextStyle(
+                                    color: AppColors.dark,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            FilledButton.icon(
+                              onPressed:
+                                  !_loading && !_starting && totalAvailable > 0
+                                  ? () => _startSession()
+                                  : null,
+                              icon: const Icon(Icons.play_arrow_rounded),
+                              label: const Text(AppStrings.startSessionButton),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ),
-                if (mode == ConversationMode.phone)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 12),
-                    child: Text(
-                      'افتحوا مكالمة خارج التطبيق، ويقرأ أحدكما الأسئلة.',
-                    ),
-                  ),
-                const SizedBox(height: 24),
-                FilledButton(
-                  onPressed: () {
-                    final selected = List<String>.of(questions)..shuffle();
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => SessionScreen(
-                          questions: selected.take(count).toList(),
-                          mode: mode,
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text('ابدأ الجلسة'),
                 ),
               ],
             ),
@@ -150,88 +516,4 @@ class _SessionSetupScreenState extends State<SessionSetupScreen> {
       ),
     );
   }
-}
-
-class _Section extends StatelessWidget {
-  const _Section({
-    required this.icon,
-    required this.title,
-    required this.child,
-  });
-  final IconData icon;
-  final String title;
-  final Widget child;
-  @override
-  Widget build(BuildContext context) => Card(
-    margin: EdgeInsets.zero,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(20),
-      side: const BorderSide(color: Color(0xFFE8EDE8)),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: AppTheme.green),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppTheme.dark,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          child,
-        ],
-      ),
-    ),
-  );
-}
-
-class _Choices<T> extends StatelessWidget {
-  const _Choices({
-    required this.values,
-    required this.selected,
-    required this.label,
-    required this.onChanged,
-  });
-  final List<T> values;
-  final T selected;
-  final String Function(T) label;
-  final ValueChanged<T> onChanged;
-  @override
-  Widget build(BuildContext context) => Wrap(
-    spacing: 8,
-    runSpacing: 8,
-    children: [
-      for (final value in values)
-        ChoiceChip(
-          label: Text(label(value)),
-          selected: value == selected,
-          onSelected: (_) => onChanged(value),
-          showCheckmark: false,
-          selectedColor: AppTheme.green,
-          backgroundColor: AppTheme.background,
-          labelStyle: TextStyle(
-            color: value == selected ? Colors.white : AppTheme.dark,
-            fontWeight: FontWeight.w600,
-          ),
-          side: BorderSide(
-            color: value == selected ? AppTheme.green : const Color(0xFFDDE5DF),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        ),
-    ],
-  );
 }

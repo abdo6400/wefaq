@@ -1,0 +1,8 @@
+# Keystore credentials template for Google Play release builds
+# Copy this file to android/key.properties and fill with production keystore details.
+# DO NOT commit android/key.properties or the .jks keystore to git!
+
+storePassword=YOUR_KEYSTORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=wefaq-release-key
+storeFile=../keystore/wefaq-release.jks

@@ -20,7 +20,9 @@ void main() {
     expect(() => SessionProgress([]), throwsArgumentError);
   });
   testWidgets('user sets up and completes a session', (tester) async {
-    await tester.pumpWidget(const WefaqApp());
+    await tester.pumpWidget(
+      WefaqApp(questionRepository: InMemoryQuestionRepository()),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('ابدأ جلسة تجريبية'));
     await tester.pumpAndSettle();
@@ -30,6 +32,8 @@ void main() {
       250,
       scrollable: find.byType(Scrollable).last,
     );
+    await tester.ensureVisible(find.text('ابدأ الجلسة'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('ابدأ الجلسة'));
     await tester.pumpAndSettle();
     expect(find.text('السؤال 1 من 3'), findsOneWidget);
@@ -68,11 +72,19 @@ void main() {
     expect(find.text('الأسئلة التي انتقلتم منها: 2'), findsOneWidget);
   });
   testWidgets('choices select mode and topic', (tester) async {
-    await tester.pumpWidget(const WefaqApp());
+    await tester.pumpWidget(
+      WefaqApp(questionRepository: InMemoryQuestionRepository()),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('ابدأ جلسة تجريبية'));
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text('في مكالمة'), 200);
+    await tester.ensureVisible(find.text('في مكالمة'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('في مكالمة'));
+    await tester.scrollUntilVisible(find.text('الحياة اليومية'), 200);
+    await tester.ensureVisible(find.text('الحياة اليومية'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('الحياة اليومية'));
     await tester.pumpAndSettle();
     final chip = tester.widget<ChoiceChip>(
@@ -90,13 +102,17 @@ void main() {
     );
   });
   testWidgets('phone mode can be selected from home', (tester) async {
-    await tester.pumpWidget(const WefaqApp());
+    await tester.pumpWidget(
+      WefaqApp(questionRepository: InMemoryQuestionRepository()),
+    );
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
       find.text('في مكالمة'),
       200,
       scrollable: find.byType(Scrollable).first,
     );
+    await tester.ensureVisible(find.text('في مكالمة'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('في مكالمة'));
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(
@@ -125,7 +141,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.pageBack();
     await tester.pumpAndSettle();
-    expect(find.text('لن يُحفظ تقدم الجلسة في هذه النسخة.'), findsOneWidget);
+    expect(find.text('إنهاء الجلسة يحذف تقدمها المحفوظ.'), findsOneWidget);
     await tester.tap(find.text('متابعة الجلسة'));
     await tester.pumpAndSettle();
     expect(find.text('test'), findsOneWidget);
