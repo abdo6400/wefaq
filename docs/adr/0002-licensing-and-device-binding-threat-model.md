@@ -1,5 +1,11 @@
 # ADR 0002: Licensing, Device Binding, and Quota Threat Model
 
+> **Superseded for the initial direct-APK release:** The current product
+> direction is an offline signed code with an explicit list of installation
+> IDs and independent per-device quotas; see
+> [offline-first release design](../offline-first-release-design.md). The
+> server-based shared-quota design below is historical and is not implemented.
+
 ## Status
 Proposed (Pre-commercial Architecture Baseline)
 

@@ -2,12 +2,12 @@
 
 **Document Purpose:** Formal audit record of certified religious, family counseling, and editorial reviews for the Wefaq question catalog.  
 **Pilot Target:** 300–500 Questions  
-**Current Draft Inventory:** 500 Questions (5 Domains × 100 Questions)  
+**Current Draft Inventory:** 600 Questions (5 Domains × 120 Questions)<br>
 **Schema Version:** 1 ([`assets/content/questions_v1.json`](file:///c:/Users/abdul/Documents/ChatGPT/wefaq/assets/content/questions_v1.json))
 
 ---
 
-**No qualified reviewer sign-off is documented in this file. All 500 questions are development-only and must not be presented as approved.**
+**No qualified reviewer sign-off is documented in this file. All 600 questions are development-only and must not be presented as approved.**
 
 ## 1. Review Governance and Panel Composition
 

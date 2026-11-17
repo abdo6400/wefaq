@@ -48,7 +48,7 @@ void main() {
 
       expect(tester.takeException(), isNull);
       expect(find.text(AppStrings.welcomeTitle), findsOneWidget);
-      expect(find.text(AppStrings.startPrototypeSession), findsOneWidget);
+      expect(find.text(AppStrings.startConversation), findsOneWidget);
     });
 
     testWidgets('SessionSetupScreen renders without overflow on 320px screen', (
@@ -118,7 +118,7 @@ void main() {
 
       expect(tester.takeException(), isNull);
       expect(find.text(AppStrings.welcomeTitle), findsOneWidget);
-      expect(find.text(AppStrings.startPrototypeSession), findsOneWidget);
+      expect(find.text(AppStrings.startConversation), findsOneWidget);
     });
 
     testWidgets('SessionSetupScreen supports 1.5x text scale factor', (

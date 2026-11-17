@@ -42,7 +42,7 @@ class LicenseStatusCard extends StatelessWidget {
 
     final badgeColor = switch (entitlement.status) {
       EntitlementStatus.active => AppColors.green,
-      EntitlementStatus.trial => AppColors.gold,
+      EntitlementStatus.trial => AppColors.goldText,
       _ => AppColors.muted,
     };
 
@@ -61,6 +61,7 @@ class LicenseStatusCard extends StatelessWidget {
     };
 
     return WefaqCard(
+      hasShadow: true,
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -70,10 +71,10 @@ class LicenseStatusCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(AppSpacing.sm),
+                padding: const EdgeInsets.all(AppSpacing.sm + 2),
                 decoration: BoxDecoration(
                   color: badgeBg,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                 ),
                 child: Icon(
                   isActive ? Icons.verified_outlined : Icons.card_membership,
@@ -81,7 +82,7 @@ class LicenseStatusCard extends StatelessWidget {
                   size: 20,
                 ),
               ),
-              const SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: AppSpacing.sm + 2),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,10 +95,10 @@ class LicenseStatusCard extends StatelessWidget {
                         color: AppColors.dark,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 3),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.sm,
+                        horizontal: AppSpacing.sm + 2,
                         vertical: 2.0,
                       ),
                       decoration: BoxDecoration(
@@ -151,7 +152,7 @@ class LicenseStatusCard extends StatelessWidget {
                   style: const TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 12.0,
-                    color: AppColors.gold,
+                    color: AppColors.goldText,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -163,8 +164,8 @@ class LicenseStatusCard extends StatelessWidget {
             icon: const Icon(Icons.key, size: 18),
             label: const Text(AppStrings.activateCodeButton),
             style: OutlinedButton.styleFrom(
-              minimumSize: const Size.fromHeight(42),
-              side: const BorderSide(color: AppColors.chipBorder),
+              minimumSize: const Size.fromHeight(AppSpacing.minTouchTarget),
+              side: const BorderSide(color: AppColors.inputBorder),
               textStyle: const TextStyle(
                 fontFamily: 'Cairo',
                 fontSize: 14,

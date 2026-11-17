@@ -39,12 +39,12 @@ class ActivityCard extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: 4.0,
+                  horizontal: AppSpacing.md,
+                  vertical: 5.0,
                 ),
                 decoration: BoxDecoration(
                   color: AppColors.tagBackground,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -81,10 +81,10 @@ class ActivityCard extends StatelessWidget {
 
           // Situation Container
           Container(
-            padding: const EdgeInsets.all(AppSpacing.md),
+            padding: const EdgeInsets.all(AppSpacing.md + 2),
             decoration: BoxDecoration(
               color: AppColors.background,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
+              borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
               border: Border.all(color: AppColors.cardBorder),
             ),
             child: Text(
@@ -92,7 +92,7 @@ class ActivityCard extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 15.0,
                 color: AppColors.dark,
-                height: 1.5,
+                height: 1.55,
               ),
             ),
           ),
@@ -118,8 +118,8 @@ class ActivityCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: 22.0,
-                      height: 22.0,
+                      width: 24.0,
+                      height: 24.0,
                       margin: const EdgeInsets.only(top: 2.0),
                       alignment: Alignment.center,
                       decoration: const BoxDecoration(
@@ -142,7 +142,7 @@ class ActivityCard extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 14.0,
                           color: AppColors.dark,
-                          height: 1.4,
+                          height: 1.45,
                         ),
                       ),
                     ),
@@ -185,7 +185,7 @@ class ActivityCard extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 14.0,
                           color: AppColors.dark,
-                          height: 1.4,
+                          height: 1.45,
                         ),
                       ),
                     ),

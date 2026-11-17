@@ -22,7 +22,7 @@ class ActivationSheet extends StatefulWidget {
       backgroundColor: AppColors.surfaceWhite,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppSpacing.radiusHero),
+          top: Radius.circular(AppSpacing.radiusHero + 4),
         ),
       ),
       builder: (_) => ActivationSheet(repository: repository),
@@ -80,7 +80,7 @@ class _ActivationSheetState extends State<ActivationSheet> {
       child: Padding(
         padding: EdgeInsets.fromLTRB(
           AppSpacing.xxl,
-          AppSpacing.xl,
+          AppSpacing.md,
           AppSpacing.xxl,
           AppSpacing.xl + bottomInset,
         ),
@@ -90,7 +90,7 @@ class _ActivationSheetState extends State<ActivationSheet> {
           children: [
             Center(
               child: Container(
-                width: 40,
+                width: 42,
                 height: 4,
                 decoration: BoxDecoration(
                   color: AppColors.chipBorder,
@@ -99,14 +99,33 @@ class _ActivationSheetState extends State<ActivationSheet> {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            Text(
-              AppStrings.activationDialogTitle,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.dark,
-              ),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: AppColors.iconContainerGold,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  ),
+                  child: const Icon(
+                    Icons.vpn_key_outlined,
+                    color: AppColors.goldText,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm + 2),
+                Expanded(
+                  child: Text(
+                    AppStrings.activationDialogTitle,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.dark,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: AppSpacing.xs),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               AppStrings.activationDialogDescription,
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -124,8 +143,10 @@ class _ActivationSheetState extends State<ActivationSheet> {
                 labelText: AppStrings.codeFieldLabel,
                 hintText: AppStrings.codeFieldHint,
                 errorText: _errorMessage,
+                filled: true,
+                fillColor: AppColors.background,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                 ),
                 prefixIcon: const Icon(Icons.vpn_key_outlined),
               ),

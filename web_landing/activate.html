@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>وفاق | صفحة التفعيل المباشر</title>
+  <meta name="theme-color" content="#205C4A">
+  <link rel="icon" type="image/png" href="./wefaq-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #205C4A;
+      --dark: #153E33;
+      --ink: #122E26;
+      --gold: #B58A45;
+      --gold-dark: #7D5B24;
+      --bg: #FAF8F2;
+      --surface: #FFFFFF;
+      --surface-soft: #FCFBF8;
+      --border: #E5EBE6;
+      --chip-border: #D7E1DA;
+      --muted: #56645E;
+      --tag-bg: #E6EFE9;
+      --gold-bg: #F6ECD9;
+      --tip-bg: #EFF4F0;
+      --success-bg: #E5F4EC;
+      --success-text: #1B6341;
+      --shadow-md: 0 22px 50px rgba(21, 62, 51, 0.11);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      line-height: 1.7;
+      position: relative;
+      overflow-x: clip;
+    }
+    .page-backdrop {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(181, 138, 69, 0.12), transparent 38%),
+        radial-gradient(circle at 85% 80%, rgba(32, 92, 74, 0.10), transparent 40%);
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      max-width: 560px;
+      width: 100%;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+    .card-banner {
+      background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+      color: #fff;
+      padding: 1.6rem 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.95rem;
+    }
+    .card-banner img {
+      width: 52px;
+      height: 52px;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: #fff;
+    }
+    .card-banner h1 { font-size: 1.38rem; font-weight: 900; line-height: 1.3; }
+    .card-banner p { font-size: 0.85rem; color: #E2EFE8; }
+    .card-body { padding: 1.65rem 1.8rem 1.85rem; }
+    @media (max-width: 520px) {
+      .card-banner, .card-body { padding-inline: 1.25rem; }
+    }
+    .notice {
+      background: var(--tag-bg);
+      color: var(--dark);
+      border: 1px solid rgba(32, 92, 74, 0.10);
+      border-radius: 16px;
+      padding: 0.95rem 1.05rem;
+      font-size: 0.92rem;
+      margin-bottom: 1.25rem;
+    }
+    .missing-box {
+      background: var(--gold-bg);
+      color: var(--gold-dark);
+      border: 1px solid #E5D4B6;
+      border-radius: 16px;
+      padding: 0.95rem 1.05rem;
+      font-size: 0.91rem;
+      margin-bottom: 1.15rem;
+    }
+    .code-box {
+      background: var(--surface-soft);
+      border: 1.5px solid var(--chip-border);
+      border-radius: 16px;
+      padding: 0.95rem 1rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.83rem;
+      direction: ltr;
+      word-break: break-all;
+      color: var(--dark);
+      margin-bottom: 0.9rem;
+      max-height: 145px;
+      overflow-y: auto;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      width: 100%;
+      min-height: 46px;
+      padding: 0.72rem 1.2rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.94rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-family: inherit;
+      margin-bottom: 0.65rem;
+      text-decoration: none;
+      transition: all 0.16s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(21, 62, 51, 0.18);
+    }
+    .btn-primary:hover { transform: translateY(-1px); }
+    .btn-outline {
+      background: var(--surface);
+      color: var(--dark);
+      border-color: var(--chip-border);
+    }
+    .btn-outline:hover { background: var(--tip-bg); border-color: var(--primary); }
+    .actions-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.55rem;
+    }
+    @media (max-width: 460px) { .actions-row { grid-template-columns: 1fr; } }
+    .status {
+      font-size: 0.86rem;
+      color: var(--success-text);
+      font-weight: 800;
+      text-align: center;
+      min-height: 1.5em;
+      margin-bottom: 0.55rem;
+    }
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .steps-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      font-size: 0.89rem;
+      color: var(--muted);
+    }
+    .step-badge {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      background: var(--tag-bg);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 0.78rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-backdrop" aria-hidden="true"></div>
+  <main class="card">
+    <div class="card-banner">
+      <img src="./wefaq-logo.png" alt="شعار وفاق">
+      <div>
+        <h1>تفعيل تطبيق وفاق</h1>
+        <p>صفحة مساعدة لروابط التفعيل المباشر</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="notice">
+        إذا لم يفتح تطبيق وفاق تلقائيًا، تأكد من تثبيت التطبيق على جهازك ثم انسخ الكود أدناه وألصقه داخل شاشة التفعيل في التطبيق.
+      </div>
+      <div id="codeSection" style="display:none;">
+        <div class="code-box" id="codeDisplay"></div>
+        <button type="button" class="btn btn-primary" id="copyCodeBtn">نسخ كود التفعيل</button>
+        <div class="status" id="copyStatus" role="status" aria-live="polite"></div>
+      </div>
+      <div id="missingSection" style="display:none;">
+        <div class="missing-box">
+          لم يتم العثور على كود تفعيل في هذا الرابط. افتح رابط التفعيل الكامل المرسل لك أو اطلب التفعيل عبر صفحة التواصل.
+        </div>
+      </div>
+      <div class="actions-row">
+        <a href="./index.html#contact" class="btn btn-outline">العودة لصفحة التواصل</a>
+        <a href="./index.html" class="btn btn-outline">الصفحة الرئيسية</a>
+      </div>
+      <ol class="steps-list">
+        <li><span class="step-badge">1</span><span>ثبّت تطبيق وفاق على جهاز Android المخصص لهذا التفعيل.</span></li>
+        <li><span class="step-badge">2</span><span>انسخ الكود أعلاه أو أعد فتح هذا الرابط بعد التثبيت.</span></li>
+        <li><span class="step-badge">3</span><span>افتح التطبيق ← شاشة التفعيل ← اضغط «لصق الكود» ثم «تفعيل».</span></li>
+      </ol>
+    </div>
+  </main>
+  <script>
+    (function () {
+      var hash = (window.location.hash || '').replace(/^#/, '').trim();
+      var codeSection = document.getElementById('codeSection');
+      var missingSection = document.getElementById('missingSection');
+      var codeDisplay = document.getElementById('codeDisplay');
+      var statusEl = document.getElementById('copyStatus');
+      var copyBtn = document.getElementById('copyCodeBtn');
+
+      function copyFallback(text) {
+        var tmp = document.createElement('textarea');
+        tmp.value = text;
+        tmp.setAttribute('readonly', '');
+        tmp.style.position = 'fixed';
+        tmp.style.opacity = '0';
+        document.body.appendChild(tmp);
+        tmp.select();
+        var ok = false;
+        try { ok = document.execCommand('copy'); } catch (_) {}
+        document.body.removeChild(tmp);
+        return ok;
+      }
+
+      if (hash && /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(hash)) {
+        codeDisplay.textContent = hash;
+        codeSection.style.display = 'block';
+        copyBtn.addEventListener('click', function () {
+          var markDone = function () {
+            statusEl.textContent = '✓ تم نسخ الكود بنجاح. افتح تطبيق وفاق وألصقه.';
+            copyBtn.textContent = 'تم النسخ ✓';
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(hash).then(markDone).catch(function () {
+              if (copyFallback(hash)) markDone();
+            });
+          } else if (copyFallback(hash)) {
+            markDone();
+          }
+        });
+      } else {
+        missingSection.style.display = 'block';
+      }
+    })();
+  </script>
+</body>
+</html>

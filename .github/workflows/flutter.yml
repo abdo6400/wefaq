@@ -13,6 +13,7 @@ jobs:
         with:
           flutter-version: '3.47.9'
           cache: true
+      - run: cp .env.example .env
       - run: flutter pub get
       - run: dart format --output=none --set-exit-if-changed lib test
       - run: flutter analyze

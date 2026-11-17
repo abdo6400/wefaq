@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+.vercel/
+.vercel_empty_public/
+.env
+.env.*
+*.log
+
+.vercel
+.env*

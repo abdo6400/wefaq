@@ -13,6 +13,27 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
+fun readEnvFileValue(file: java.io.File, key: String): String? {
+    if (!file.exists()) return null
+    for (rawLine in file.readLines()) {
+        val line = rawLine.trim()
+        if (line.isEmpty() || line.startsWith("#")) continue
+        val eqIndex = line.indexOf('=')
+        if (eqIndex <= 0) continue
+        if (line.substring(0, eqIndex).trim() != key) continue
+        val rawValue = line.substring(eqIndex + 1).trim()
+        val value = if ((rawValue.startsWith("\"") && rawValue.endsWith("\"") && rawValue.length >= 2) ||
+            (rawValue.startsWith("'") && rawValue.endsWith("'") && rawValue.length >= 2)
+        ) {
+            rawValue.substring(1, rawValue.length - 1)
+        } else {
+            rawValue
+        }
+        if (value.isNotEmpty()) return value
+    }
+    return null
+}
+
 android {
     namespace = "com.wefaq.wefaq"
     compileSdk = flutter.compileSdkVersion
@@ -40,6 +61,10 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["wefaqLinkHost"] =
+            System.getenv("WEFAQ_LINK_HOST")?.takeIf { it.isNotBlank() }
+                ?: readEnvFileValue(rootProject.file("../.env"), "WEFAQ_LINK_HOST")
+                ?: "unconfigured.invalid"
     }
 
     buildTypes {

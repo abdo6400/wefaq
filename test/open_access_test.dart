@@ -32,7 +32,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text(AppStrings.licenseStatusTitle), findsNothing);
-    await tester.tap(find.text(AppStrings.startPrototypeSession));
+    await tester.tap(find.text(AppStrings.startConversation));
     await tester.pumpAndSettle();
     for (var i = 0; i < 5; i++) {
       await tester.scrollUntilVisible(

@@ -10,12 +10,14 @@ class ChoiceChipsSelector<T> extends StatelessWidget {
     required this.selected,
     required this.label,
     required this.onChanged,
+    this.iconBuilder,
   });
 
   final List<T> values;
   final T selected;
   final String Function(T) label;
   final ValueChanged<T> onChanged;
+  final IconData Function(T)? iconBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -24,39 +26,43 @@ class ChoiceChipsSelector<T> extends StatelessWidget {
       runSpacing: AppSpacing.sm,
       children: [
         for (final value in values)
-          Semantics(
+          ChoiceChip(
+            avatar: iconBuilder != null
+                ? Icon(
+                    iconBuilder!(value),
+                    size: 17,
+                    color: value == selected
+                        ? AppColors.surfaceWhite
+                        : AppColors.green,
+                  )
+                : null,
+            label: Text(label(value)),
             selected: value == selected,
-            button: true,
-            child: ChoiceChip(
-              label: Text(label(value)),
-              selected: value == selected,
-              onSelected: (_) => onChanged(value),
-              showCheckmark: false,
-              selectedColor: AppColors.green,
-              backgroundColor: AppColors.background,
-              elevation: 0,
-              pressElevation: 0,
-              labelStyle: TextStyle(
-                fontFamily: 'Cairo',
-                color: value == selected
-                    ? AppColors.surfaceWhite
-                    : AppColors.dark,
-                fontWeight: value == selected
-                    ? FontWeight.bold
-                    : FontWeight.w600,
-              ),
-              side: BorderSide(
-                color: value == selected
-                    ? AppColors.green
-                    : AppColors.chipBorder,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSpacing.radiusChip),
-              ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.sm,
-              ),
+            onSelected: (_) => onChanged(value),
+            showCheckmark: false,
+            selectedColor: AppColors.green,
+            backgroundColor: AppColors.background,
+            elevation: 0,
+            pressElevation: 0,
+            labelStyle: TextStyle(
+              fontFamily: 'Cairo',
+              fontSize: 13.5,
+              color: value == selected
+                  ? AppColors.surfaceWhite
+                  : AppColors.dark,
+              fontWeight: value == selected ? FontWeight.bold : FontWeight.w600,
+            ),
+            side: BorderSide(
+              color: value == selected
+                  ? AppColors.green
+                  : AppColors.inputBorder,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
             ),
           ),
       ],

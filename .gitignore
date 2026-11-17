@@ -48,6 +48,13 @@ app.*.map.json
 .widget_preview/
 
 # Signing keys and credentials
+.env
+.env.*
+!.env.example
 **/android/key.properties
 *.jks
 *.keystore
+*.wefaq-private
+*.wefaq-license.json
+.vercel/
+.vercel

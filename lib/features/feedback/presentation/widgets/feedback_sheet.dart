@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -59,6 +60,15 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
   int _rating = 5;
   late bool _attachInstallationId = widget.installationId != null;
   bool _isSaving = false;
+  String? _commentError;
+
+  String get _ratingLabel => switch (_rating) {
+    5 => 'ممتاز جدًا',
+    4 => 'جيد جدًا',
+    3 => 'جيد',
+    2 => 'مقبول',
+    _ => 'يحتاج تحسين',
+  };
 
   @override
   void dispose() {
@@ -69,19 +79,16 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
   Future<void> _submitLocal() async {
     final comment = _controller.text.trim();
     if (comment.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            'يرجى كتابة ملاحظتك أو اقتراحك قبل الإرسال',
-            style: TextStyle(fontFamily: 'Cairo'),
-          ),
-          backgroundColor: Colors.red.shade700,
-        ),
-      );
+      setState(() {
+        _commentError = 'يرجى كتابة ملاحظتك أو اقتراحك قبل الإرسال';
+      });
       return;
     }
 
-    setState(() => _isSaving = true);
+    setState(() {
+      _isSaving = true;
+      _commentError = null;
+    });
     final report = FeedbackReport(
       id: 'fb_${DateTime.now().millisecondsSinceEpoch}',
       category: _category,
@@ -133,15 +140,9 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
   void _sendWhatsApp() {
     final comment = _controller.text.trim();
     if (comment.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            'يرجى كتابة ملاحظتك أو اقتراحك أولاً',
-            style: TextStyle(fontFamily: 'Cairo'),
-          ),
-          backgroundColor: Colors.red.shade700,
-        ),
-      );
+      setState(() {
+        _commentError = 'يرجى كتابة ملاحظتك أو اقتراحك أولاً';
+      });
       return;
     }
 
@@ -181,10 +182,10 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
                 color: AppColors.background,
-                borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                 border: Border.all(color: AppColors.cardBorder),
               ),
-              child: Text(
+              child: SelectableText(
                 message,
                 style: const TextStyle(
                   fontFamily: 'Cairo',
@@ -198,12 +199,19 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('إلغاء', style: TextStyle(fontFamily: 'Cairo')),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            style: FilledButton.styleFrom(backgroundColor: AppColors.green),
             child: const Text('إغلاق', style: TextStyle(fontFamily: 'Cairo')),
+          ),
+          FilledButton.icon(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: message));
+              Navigator.of(ctx).pop();
+            },
+            style: FilledButton.styleFrom(backgroundColor: AppColors.green),
+            icon: const Icon(Icons.copy, size: 18),
+            label: const Text(
+              'نسخ الملاحظة',
+              style: TextStyle(fontFamily: 'Cairo'),
+            ),
           ),
         ],
       ),
@@ -215,15 +223,15 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Material(
-      color: Colors.white,
+      color: AppColors.surfaceWhite,
       borderRadius: const BorderRadius.vertical(
-        top: Radius.circular(AppSpacing.radiusCard),
+        top: Radius.circular(AppSpacing.radiusHero + 4),
       ),
       clipBehavior: Clip.antiAlias,
       child: Container(
         padding: EdgeInsets.fromLTRB(
           AppSpacing.lg,
-          AppSpacing.lg,
+          AppSpacing.sm + 2,
           AppSpacing.lg,
           AppSpacing.lg + bottomInset,
         ),
@@ -236,7 +244,7 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
                 child: Container(
                   width: 40,
                   height: 4,
-                  margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                  margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                   decoration: BoxDecoration(
                     color: AppColors.chipBorder,
                     borderRadius: BorderRadius.circular(2),
@@ -245,31 +253,50 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
               ),
               Row(
                 children: [
-                  const Icon(
-                    Icons.rate_review_outlined,
-                    color: AppColors.green,
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    widget.questionId != null
-                        ? 'ملاحظة حول هذا السؤال'
-                        : 'ملاحظات النسخة التجريبية',
-                    style: const TextStyle(
-                      fontFamily: 'Cairo',
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.dark,
+                  Container(
+                    padding: const EdgeInsets.all(AppSpacing.sm),
+                    decoration: BoxDecoration(
+                      color: AppColors.iconContainerGreen,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                     ),
+                    child: const Icon(
+                      Icons.rate_review_outlined,
+                      color: AppColors.green,
+                      size: 19,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm + 2),
+                  Expanded(
+                    child: Semantics(
+                      header: true,
+                      child: Text(
+                        widget.questionId != null
+                            ? 'ملاحظة حول هذا السؤال'
+                            : 'ملاحظات النسخة التجريبية',
+                        style: const TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.dark,
+                        ),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    tooltip: 'إغلاق',
+                    icon: const Icon(Icons.close, color: AppColors.muted),
                   ),
                 ],
               ),
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.sm + 2),
               const Text(
                 'نوع الملاحظة:',
                 style: TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.dark,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
@@ -283,13 +310,24 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
                       cat.label,
                       style: TextStyle(
                         fontFamily: 'Cairo',
-                        fontSize: 12,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
                         color: isSelected ? Colors.white : AppColors.dark,
                       ),
                     ),
                     selected: isSelected,
                     selectedColor: AppColors.green,
                     backgroundColor: AppColors.background,
+                    side: BorderSide(
+                      color: isSelected
+                          ? AppColors.green
+                          : AppColors.inputBorder,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        AppSpacing.radiusPill,
+                      ),
+                    ),
                     showCheckmark: false,
                     onSelected: (val) {
                       if (val) setState(() => _category = cat);
@@ -297,53 +335,97 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
                   );
                 }).toList(),
               ),
-              const SizedBox(height: AppSpacing.md),
-              const Text(
-                'تقييم التجربة:',
-                style: TextStyle(
-                  fontFamily: 'Cairo',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
+              const SizedBox(height: AppSpacing.sm + 2),
+              Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.xs,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  const Text(
+                    'تقييم التجربة:',
+                    style: TextStyle(
+                      fontFamily: 'Cairo',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.dark,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm + 2,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.iconContainerGold,
+                      borderRadius: BorderRadius.circular(
+                        AppSpacing.radiusPill,
+                      ),
+                    ),
+                    child: Text(
+                      _ratingLabel,
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.goldText,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: AppSpacing.xs),
-              Row(
+              Wrap(
+                spacing: AppSpacing.xs,
                 children: List.generate(5, (index) {
                   final starNum = index + 1;
-                  return IconButton(
-                    onPressed: () => setState(() => _rating = starNum),
-                    icon: Icon(
-                      starNum <= _rating
-                          ? Icons.star_rounded
-                          : Icons.star_border_rounded,
-                      color: AppColors.gold,
-                      size: 30,
+                  return Semantics(
+                    selected: starNum <= _rating,
+                    child: IconButton(
+                      onPressed: () => setState(() => _rating = starNum),
+                      icon: Icon(
+                        starNum <= _rating
+                            ? Icons.star_rounded
+                            : Icons.star_border_rounded,
+                        color: AppColors.goldText,
+                        size: 30,
+                      ),
+                      tooltip: '$starNum من 5',
                     ),
-                    tooltip: '$starNum من 5',
                   );
                 }),
               ),
-              const SizedBox(height: AppSpacing.sm),
+              const SizedBox(height: AppSpacing.xs),
               TextField(
                 controller: _controller,
+                minLines: 2,
                 maxLines: 3,
+                onChanged: (_) {
+                  if (_commentError != null) {
+                    setState(() => _commentError = null);
+                  }
+                },
                 style: const TextStyle(fontFamily: 'Cairo', fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'اكتب ملاحظتك، اقتراحك، أو أي استفسار بكل صراحة...',
+                  errorText: _commentError,
                   hintStyle: const TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 13,
                     color: AppColors.muted,
                   ),
+                  filled: true,
+                  fillColor: AppColors.background,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                    borderSide: const BorderSide(color: AppColors.cardBorder),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                    borderSide: const BorderSide(color: AppColors.inputBorder),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                    borderSide: const BorderSide(color: AppColors.inputBorder),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                     borderSide: const BorderSide(
                       color: AppColors.green,
-                      width: 2,
+                      width: 1.8,
                     ),
                   ),
                 ),
@@ -352,7 +434,7 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
                 const SizedBox(height: AppSpacing.xs),
                 CheckboxListTile(
                   contentPadding: EdgeInsets.zero,
-                  dense: true,
+                  activeColor: AppColors.green,
                   value: _attachInstallationId,
                   onChanged: (val) =>
                       setState(() => _attachInstallationId = val ?? false),
@@ -360,7 +442,7 @@ class _FeedbackSheetState extends State<FeedbackSheet> {
                     'تضمين معرّف التثبيت لمساعدة فريق الدعم في المتابعة',
                     style: TextStyle(
                       fontFamily: 'Cairo',
-                      fontSize: 12,
+                      fontSize: 12.5,
                       color: AppColors.muted,
                     ),
                   ),

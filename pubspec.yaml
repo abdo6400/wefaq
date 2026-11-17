@@ -1,16 +1,19 @@
 name: wefaq
 description: "Wefaq: a respectful conversation companion."
 publish_to: none
-version: 0.1.0+15
+version: 0.2.0+16
 
 environment:
   sdk: ^3.13.0
 
 dependencies:
+  app_links: ^7.2.2
+  cryptography: ^2.9.0
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  flutter_secure_storage: ^11.2.0
   path_provider: ^2.1.6
 
 dev_dependencies:
@@ -21,6 +24,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - .env
     - assets/images/wefaq_icon_concept.png
     - assets/content/questions_v1.json
   fonts:

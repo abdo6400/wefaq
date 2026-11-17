@@ -24,7 +24,7 @@ void main() {
       WefaqApp(questionRepository: InMemoryQuestionRepository()),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('ابدأ جلسة تجريبية'));
+    await tester.tap(find.text('ابدأ جلسة'));
     await tester.pumpAndSettle();
     expect(find.textContaining('لم تُراجع شرعيًا'), findsOneWidget);
     await tester.scrollUntilVisible(
@@ -76,7 +76,7 @@ void main() {
       WefaqApp(questionRepository: InMemoryQuestionRepository()),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('ابدأ جلسة تجريبية'));
+    await tester.tap(find.text('ابدأ جلسة'));
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(find.text('في مكالمة'), 200);
     await tester.ensureVisible(find.text('في مكالمة'));

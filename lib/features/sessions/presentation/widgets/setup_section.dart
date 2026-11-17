@@ -10,17 +10,22 @@ class SetupSection extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.child,
+    this.trailing,
+    this.subtitle,
   });
 
   final IconData icon;
   final String title;
   final Widget child;
+  final Widget? trailing;
+  final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return WefaqCard(
       hasShadow: true,
-      padding: const EdgeInsets.all(AppSpacing.xl),
+      padding: const EdgeInsets.all(AppSpacing.lg + 2),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -41,14 +46,30 @@ class SetupSection extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.dark,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: AppColors.dark,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (subtitle != null && subtitle!.isNotEmpty)
+                      Text(
+                        subtitle!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.muted,
+                        ),
+                      ),
+                  ],
                 ),
               ),
+              if (trailing != null) ...[
+                const SizedBox(width: AppSpacing.sm),
+                trailing!,
+              ],
             ],
           ),
           const SizedBox(height: AppSpacing.md),

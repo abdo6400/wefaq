@@ -13,6 +13,7 @@ class WefaqPageHeader extends StatelessWidget {
     this.badgeText,
     this.leading,
     this.bottomOverlap = 0,
+    this.compact = false,
   });
 
   final String title;
@@ -21,59 +22,81 @@ class WefaqPageHeader extends StatelessWidget {
   final String? badgeText;
   final Widget? leading;
   final double bottomOverlap;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final topPad = compact ? AppSpacing.md : AppSpacing.lg;
+    final bottomPad = (compact ? AppSpacing.lg : AppSpacing.xl) + bottomOverlap;
+    final cornerRadius = const Radius.circular(AppSpacing.radiusHero + 8);
 
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: AlignmentDirectional.topStart,
           end: AlignmentDirectional.bottomEnd,
-          colors: [AppColors.dark, AppColors.green],
+          colors: [AppColors.dark, AppColors.green, AppColors.greenLight],
+          stops: [0.0, 0.58, 1.0],
         ),
-        borderRadius: const BorderRadius.vertical(
-          bottom: Radius.circular(AppSpacing.radiusHero + 8),
-        ),
+        borderRadius: BorderRadius.vertical(bottom: cornerRadius),
         boxShadow: const [
           BoxShadow(
-            color: AppColors.cardShadow,
-            blurRadius: 20,
+            color: AppColors.cardShadowDeep,
+            blurRadius: 22,
             offset: Offset(0, 8),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(
-          bottom: Radius.circular(AppSpacing.radiusHero + 8),
-        ),
+        borderRadius: BorderRadius.vertical(bottom: cornerRadius),
         child: Stack(
           children: [
             PositionedDirectional(
-              top: -42,
-              end: -36,
+              top: -46,
+              end: -34,
               child: IgnorePointer(
                 child: Container(
-                  width: 148,
-                  height: 148,
+                  width: 156,
+                  height: 156,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.gold.withValues(alpha: 0.14),
+                    gradient: RadialGradient(
+                      colors: [
+                        AppColors.gold.withValues(alpha: 0.22),
+                        AppColors.gold.withValues(alpha: 0.0),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
             PositionedDirectional(
-              bottom: -28,
+              top: -16,
+              end: -8,
+              child: IgnorePointer(
+                child: Container(
+                  width: 96,
+                  height: 96,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppColors.surfaceWhite.withValues(alpha: 0.09),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            PositionedDirectional(
+              bottom: -32,
               start: -24,
               child: IgnorePointer(
                 child: Container(
-                  width: 110,
-                  height: 110,
+                  width: 112,
+                  height: 112,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.surfaceWhite.withValues(alpha: 0.06),
+                    color: AppColors.surfaceWhite.withValues(alpha: 0.05),
                   ),
                 ),
               ),
@@ -81,9 +104,9 @@ class WefaqPageHeader extends StatelessWidget {
             Padding(
               padding: EdgeInsets.fromLTRB(
                 AppSpacing.xl,
-                AppSpacing.lg,
+                topPad,
                 AppSpacing.xl,
-                AppSpacing.xl + bottomOverlap,
+                bottomPad,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -91,7 +114,23 @@ class WefaqPageHeader extends StatelessWidget {
                   if (leading != null || badgeText != null) ...[
                     Row(
                       children: [
-                        ?leading,
+                        if (leading != null)
+                          leading is IconButton
+                              ? Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.dark.withValues(
+                                      alpha: 0.36,
+                                    ),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: AppColors.surfaceWhite.withValues(
+                                        alpha: 0.24,
+                                      ),
+                                    ),
+                                  ),
+                                  child: leading,
+                                )
+                              : leading!,
                         if (badgeText != null) ...[
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
@@ -100,18 +139,16 @@ class WefaqPageHeader extends StatelessWidget {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: AppSpacing.md,
-                                  vertical: AppSpacing.xs + 1,
+                                  vertical: AppSpacing.xs + 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.surfaceWhite.withValues(
-                                    alpha: 0.14,
-                                  ),
+                                  color: AppColors.dark.withValues(alpha: 0.44),
                                   borderRadius: BorderRadius.circular(
                                     AppSpacing.radiusPill,
                                   ),
                                   border: Border.all(
                                     color: AppColors.surfaceWhite.withValues(
-                                      alpha: 0.2,
+                                      alpha: 0.24,
                                     ),
                                   ),
                                 ),
@@ -121,7 +158,7 @@ class WefaqPageHeader extends StatelessWidget {
                                   style: const TextStyle(
                                     color: AppColors.surfaceWhite,
                                     fontSize: 12,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
                               ),
@@ -130,7 +167,7 @@ class WefaqPageHeader extends StatelessWidget {
                         ],
                       ],
                     ),
-                    const SizedBox(height: AppSpacing.lg),
+                    SizedBox(height: compact ? AppSpacing.md : AppSpacing.lg),
                   ],
                   if (tagline != null) ...[
                     Align(
@@ -155,23 +192,32 @@ class WefaqPageHeader extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.md),
+                    SizedBox(
+                      height: compact ? AppSpacing.sm : AppSpacing.md - 2,
+                    ),
                   ],
-                  Text(
-                    title,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      color: AppColors.surfaceWhite,
-                      fontWeight: FontWeight.bold,
-                      height: 1.35,
+                  Semantics(
+                    header: true,
+                    child: Text(
+                      title,
+                      style:
+                          (compact
+                                  ? theme.textTheme.titleLarge
+                                  : theme.textTheme.headlineSmall)
+                              ?.copyWith(
+                                color: AppColors.surfaceWhite,
+                                fontWeight: FontWeight.bold,
+                                height: 1.32,
+                              ),
                     ),
                   ),
                   if (subtitle != null && subtitle!.isNotEmpty) ...[
-                    const SizedBox(height: AppSpacing.xs + 2),
+                    const SizedBox(height: AppSpacing.xs + 1),
                     Text(
                       subtitle!,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: AppColors.background,
-                        height: 1.6,
+                        color: AppColors.surfaceWhite.withValues(alpha: 0.92),
+                        height: 1.55,
                       ),
                     ),
                   ],

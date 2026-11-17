@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>وفاق | سياسة الخصوصية والشفافية</title>
+  <meta name="theme-color" content="#205C4A">
+  <link rel="icon" type="image/png" href="./wefaq-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #205C4A;
+      --dark: #153E33;
+      --ink: #122E26;
+      --gold: #B58A45;
+      --gold-dark: #7D5B24;
+      --bg: #FAF8F2;
+      --surface: #FFFFFF;
+      --surface-soft: #FCFBF8;
+      --border: #E5EBE6;
+      --chip-border: #D7E1DA;
+      --muted: #56645E;
+      --tag-bg: #E6EFE9;
+      --gold-bg: #F6ECD9;
+      --tip-bg: #EFF4F0;
+      --shadow-sm: 0 8px 24px rgba(21, 62, 51, 0.06);
+      --shadow-md: 0 18px 40px rgba(21, 62, 51, 0.09);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.75;
+      min-height: 100vh;
+      overflow-x: clip;
+    }
+    .page-backdrop {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background:
+        radial-gradient(circle at 12% 14%, rgba(181, 138, 69, 0.10), transparent 36%),
+        radial-gradient(circle at 88% 20%, rgba(32, 92, 74, 0.08), transparent 38%);
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.85rem 1.25rem 0;
+    }
+    .nav-shell {
+      max-width: 940px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.90);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.55rem 0.85rem 0.55rem 0.65rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 900;
+      font-size: 1.28rem;
+      padding-inline-start: 0.25rem;
+    }
+    .brand img {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      border: 1px solid var(--border);
+    }
+    .nav-actions { display: flex; align-items: center; gap: 0.5rem; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      min-height: 40px;
+      padding: 0.48rem 1.15rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.86rem;
+      border: 1px solid transparent;
+      transition: all 0.16s;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+      color: #fff;
+    }
+    .btn-primary:hover { transform: translateY(-1px); }
+    .btn-outline {
+      background: var(--surface);
+      color: var(--dark);
+      border-color: var(--chip-border);
+    }
+    .btn-outline:hover { background: var(--tip-bg); border-color: var(--primary); }
+    @media (max-width: 520px) {
+      .nav-actions .btn-hide-xs { display: none; }
+      .nav-shell { border-radius: 20px; }
+    }
+
+    main {
+      max-width: 900px;
+      margin: 2rem auto 4rem;
+      padding: 0 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .hero-card {
+      background: linear-gradient(145deg, var(--dark) 0%, var(--primary) 100%);
+      color: #fff;
+      border-radius: 28px;
+      padding: 2.2rem;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-card::after {
+      content: '';
+      position: absolute;
+      top: -50px;
+      left: -50px;
+      width: 190px;
+      height: 190px;
+      border-radius: 999px;
+      background: rgba(181, 138, 69, 0.16);
+      pointer-events: none;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255, 255, 255, 0.15);
+      color: #F7EBCD;
+      padding: 0.3rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      margin-bottom: 0.9rem;
+    }
+    .hero-card h1 {
+      font-size: clamp(1.65rem, 3.2vw, 2.25rem);
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 0.65rem;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-card p {
+      color: #E6F0EA;
+      font-size: 1.01rem;
+      max-width: 680px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-pill {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #fff;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+    }
+    @media (max-width: 600px) { .card, .hero-card { padding: 1.35rem; } }
+    .card-head {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.9rem;
+    }
+    .card-num {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--tag-bg);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+    .card-num.gold { background: var(--gold-bg); color: var(--gold-dark); }
+    h2 { font-size: 1.16rem; font-weight: 800; color: var(--ink); }
+    .card p { color: var(--muted); font-size: 0.96rem; }
+    .clean-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-top: 0.25rem;
+    }
+    .clean-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      color: var(--muted);
+      font-size: 0.96rem;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      padding: 0.75rem 0.95rem;
+      border-radius: 14px;
+    }
+    .list-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
+      font-weight: 900;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      padding: 1.75rem 1.25rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    footer a { color: var(--primary); font-weight: 700; text-decoration: none; margin: 0 0.65rem; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="page-backdrop" aria-hidden="true"></div>
+
+  <header>
+    <div class="nav-shell">
+      <a href="./index.html" class="brand">
+        <img src="./wefaq-logo.png" alt="شعار وفاق">
+        <span id="privBrandName">وفاق</span>
+      </a>
+      <div class="nav-actions">
+        <a href="./index.html#contact" class="btn btn-outline btn-hide-xs">تواصل معنا</a>
+        <a href="./index.html" class="btn btn-primary">العودة للرئيسية</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-card">
+      <div class="badge" id="privBadge">الشفافية وحماية الخصوصية</div>
+      <h1 id="privTitle">سياسة الخصوصية وحدود الاستخدام</h1>
+      <p id="privSubtitle">صُمم نظام وفاق من الأساس لاحترام خصوصية المقبلين على الزواج، بحيث يظل حوارهما ملكًا لهما وحدهما دون تسجيل أو تتبع.</p>
+      <div class="hero-pills">
+        <span class="hero-pill">✓ بدون إنشاء حسابات</span>
+        <span class="hero-pill">✓ بدون ميكروفون أو تسجيل صوت</span>
+        <span class="hero-pill">✓ حفظ محلي على جهازك فقط</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <span class="card-num">01</span>
+        <h2>ما لا يجمعه التطبيق أبدًا</h2>
+      </div>
+      <ul class="clean-list">
+        <li><span class="list-dot">✓</span><span>لا يطلب التطبيق إنشاء حساب شخصي أو ربط بريد إلكتروني للاستخدام الأساسي.</span></li>
+        <li><span class="list-dot">✓</span><span>لا يسجل التطبيق إجابات الحوار، ولا يطلب إذن الميكروفون أو الكاميرا أو جهات الاتصال أو الموقع الجغرافي.</span></li>
+        <li><span class="list-dot">✓</span><span>في تمرين «استكشف أسلوبك» المستوحى من DISC، تبقى الاختيارات والملاحظات الاختيارية في ذاكرة الشاشة فقط وتُحذف عند الخروج.</span></li>
+        <li><span class="list-dot">✓</span><span>لا توجد إعلانات أو معرفات تتبع إعلاني داخل التطبيق أو الموقع.</span></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <span class="card-num gold">02</span>
+        <h2>البيانات المحفوظة محليًا على جهازك فقط</h2>
+      </div>
+      <ul class="clean-list">
+        <li><span class="list-dot">•</span><span>حالة الجلسة الحالية (رقم السؤال الحالي وقائمة الأسئلة المتخطاة فقط دون أي إجابات) لتتمكن من استئناف الجلسة.</span></li>
+        <li><span class="list-dot">•</span><span>قائمة «أسئلة تهمنا» (المفضلة) وسجل معرّفات الأسئلة السابقة لتجنب التكرار.</span></li>
+        <li><span class="list-dot">•</span><span>الملاحظات التي تكتبها اختياريًا في نموذج التقييم تُحفظ على جهازك محليًا ولا تُرسل تلقائيًا لأي خادم.</span></li>
+        <li><span class="list-dot">•</span><span>معرّف التثبيت العشوائي وبيانات التفعيل الموقّعة تُحفظ في التخزين الآمن على الجهاز.</span></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <span class="card-num">03</span>
+        <h2>حدود النظام وأخلاقياته</h2>
+      </div>
+      <p>وفاق أداة تنظيمية لتسهيل الحوار الهادف بين الراشدين المقبلين على الزواج (18+)، وليس بديلًا عن الاستشارة الأسرية المتخصصة أو الفتوى الشرعية أو التشخيص النفسي، كما لا يقدّم ضمانات أو اختبارات توافق رقمية.</p>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <span class="card-num gold">04</span>
+        <h2>التواصل المباشر</h2>
+      </div>
+      <p>يعتمد هذا الموقع على التواصل المباشر فقط لطلب أكواد التفعيل أو الاستفسارات والدعم الفني، ولا يتضمن أي بوابات دفع إلكتروني أو حفظ بيانات بطاقات بنكية.</p>
+    </section>
+  </main>
+
+  <footer>
+    <a href="./index.html">الصفحة الرئيسية</a>
+    <a href="./activate.html">مساعدة التفعيل</a>
+    <a href="./index.html#contact">تواصل معنا</a>
+  </footer>
+
+  <script>
+    (function () {
+      const endpoint = 'https://wefaq-questions-api.vercel.app/v1/app-config';
+      fetch(endpoint, { headers: { Accept: 'application/json' }, cache: 'no-store' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (cfg) {
+          if (!cfg || !cfg.site) return;
+          if (cfg.site.meta && cfg.site.meta.brandName) {
+            document.getElementById('privBrandName').textContent = cfg.site.meta.brandName;
+          }
+          if (cfg.site.privacyPage) {
+            var p = cfg.site.privacyPage;
+            if (p.badge) document.getElementById('privBadge').textContent = p.badge;
+            if (p.title) document.getElementById('privTitle').textContent = p.title;
+            if (p.subtitle) document.getElementById('privSubtitle').textContent = p.subtitle;
+          }
+        })
+        .catch(function () {});
+    })();
+  </script>
+</body>
+</html>

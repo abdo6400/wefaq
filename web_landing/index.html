@@ -3,239 +3,2602 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>وفاق | حوار يقرّب الفهم بين المخطوبين</title>
-  <meta name="description" content="تطبيق وفاق يساعد المقبلين على الزواج على فتح حوارات هادئة ومحترمة عبر أسئلة منتقاة وسيناريوهات واقعية بدون تسجيل أي إجابات أو مكالمات.">
+  <title>وفاق | رفيق الحوار الهادئ للمقبلين على الزواج</title>
+  <meta name="description" content="نظام وفاق يساعد المخطوبين والمقبلين على الزواج على فتح حوارات هادئة ومحترمة لمدة أسبوعين مجانًا دون إنترنت قبل التفعيل الدائم بخصوصية تامة دون تسجيل أي إجابات.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="وفاق | رفيق الحوار الهادئ للمقبلين على الزواج">
+  <meta property="og:description" content="ابدأ مجانًا فور التثبيت لمدة أسبوعين (14 يومًا) حتى دون إنترنت، ثم يُغلق التطبيق تلقائيًا للتفعيل الدائم — خصوصية 100% دون حسابات أو تسجيل.">
+  <meta property="og:image" content="https://wefaq-site.vercel.app/wefaq-logo.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="theme-color" content="#205C4A">
+  <link rel="icon" type="image/png" href="./wefaq-logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #205C4A;
+      --primary-hover: #18493A;
       --dark: #153E33;
+      --ink: #122E26;
       --gold: #B58A45;
+      --gold-dark: #7D5B24;
       --bg: #FAF8F2;
+      --bg-warm: #F4EFE4;
       --surface: #FFFFFF;
-      --border: #E8EDE8;
-      --muted: #5F6D67;
+      --surface-soft: #FCFBF8;
+      --border: #E5EBE6;
+      --chip-border: #D7E1DA;
+      --muted: #56645E;
       --tag-bg: #E6EFE9;
+      --gold-bg: #F6ECD9;
+      --tip-bg: #EFF4F0;
+      --success-bg: #E5F4EC;
+      --success-text: #1B6341;
+      --warning-bg: #FDF4E3;
+      --warning-text: #855A16;
+      --shadow-xs: 0 2px 8px rgba(21, 62, 51, 0.04);
+      --shadow-sm: 0 8px 24px rgba(21, 62, 51, 0.06);
+      --shadow-md: 0 18px 44px rgba(21, 62, 51, 0.10);
+      --shadow-lg: 0 28px 64px rgba(21, 62, 51, 0.16);
+      --radius-sm: 12px;
+      --radius-md: 18px;
+      --radius-lg: 24px;
+      --radius-xl: 30px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 88px; }
     body {
       font-family: 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background-color: var(--bg);
-      color: var(--dark);
-      line-height: 1.6;
+      color: var(--ink);
+      line-height: 1.7;
+      overflow-x: clip;
+      -webkit-font-smoothing: antialiased;
     }
+    button, input, select, textarea { font-family: inherit; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      direction: ltr;
+      unicode-bidi: isolate;
+      background: var(--tip-bg);
+      color: var(--dark);
+      padding: 0.1rem 0.42rem;
+      border-radius: 6px;
+      font-size: 0.86em;
+      font-weight: 700;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    :focus-visible {
+      outline: 2.5px solid var(--gold);
+      outline-offset: 2px;
+    }
+
+    /* Ambient Page Backdrop */
+    .page-backdrop {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background:
+        radial-gradient(circle at 8% 12%, rgba(181, 138, 69, 0.10), transparent 36%),
+        radial-gradient(circle at 92% 18%, rgba(32, 92, 74, 0.08), transparent 38%),
+        radial-gradient(circle at 50% 85%, rgba(32, 92, 74, 0.05), transparent 45%);
+    }
+
+    /* Announcement Banner */
+    .announcement-bar {
+      display: none;
+      background: var(--dark);
+      color: #fff;
+      padding: 0.65rem 1.25rem;
+      font-size: 0.88rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .announcement-bar.show { display: block; }
+    .announcement-bar.style-success { background: #1A563C; }
+    .announcement-bar.style-warning { background: #7D5B24; }
+    .announcement-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      text-align: center;
+      flex-wrap: wrap;
+    }
+    .announcement-title {
+      background: rgba(255, 255, 255, 0.16);
+      padding: 0.12rem 0.65rem;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.78rem;
+    }
+
+    /* Sticky Glass Navigation */
     header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 1rem 1.5rem;
       position: sticky;
       top: 0;
       z-index: 100;
+      padding: 0.85rem 1.25rem 0;
+      pointer-events: none;
+    }
+    .nav-shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(229, 235, 230, 0.9);
+      border-radius: 999px;
+      padding: 0.55rem 0.85rem 0.55rem 0.6rem;
+      box-shadow: var(--shadow-sm);
+      pointer-events: auto;
+      transition: box-shadow 0.2s, background 0.2s;
+    }
+    .nav-shell.scrolled {
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: var(--shadow-md);
     }
     .nav-container {
-      max-width: 1080px;
-      margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 0.85rem;
     }
     .brand {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
       text-decoration: none;
+      color: var(--dark);
+      font-weight: 900;
+      font-size: 1.3rem;
+      letter-spacing: -0.01em;
+      padding-inline-start: 0.25rem;
+    }
+    .brand img {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-xs);
+      object-fit: cover;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 0.42rem 0.85rem;
+      border-radius: 999px;
+      transition: color 0.16s, background 0.16s;
+    }
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--primary);
+      background: var(--tag-bg);
+    }
+    .nav-actions {
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
-    .cta-btn {
-      background-color: var(--primary);
-      color: #fff;
-      padding: 0.6rem 1.2rem;
+    .menu-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      min-height: 40px;
+      border: 1px solid var(--chip-border);
+      background: var(--surface);
+      color: var(--dark);
+      border-radius: 999px;
+      padding: 0.42rem 0.85rem;
+      font-weight: 700;
+      font-size: 0.86rem;
+      cursor: pointer;
+    }
+    .mobile-drawer {
+      display: none;
+      max-width: 1180px;
+      margin: 0.55rem auto 0;
+      flex-direction: column;
+      gap: 0.25rem;
+      padding: 0.85rem;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      pointer-events: auto;
+    }
+    .mobile-drawer.open { display: flex; }
+    .mobile-drawer a {
+      color: var(--dark);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.96rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: var(--radius-sm);
+      transition: background 0.14s;
+    }
+    .mobile-drawer a:hover { background: var(--tip-bg); color: var(--primary); }
+    @media (max-width: 920px) {
+      .nav-links { display: none; }
+      .menu-toggle { display: inline-flex; }
+    }
+    @media (max-width: 520px) {
+      .nav-shell { border-radius: 20px; padding: 0.5rem 0.7rem; }
+      .nav-actions .btn-nav-primary { padding: 0.48rem 0.9rem; font-size: 0.84rem; }
+    }
+
+    /* Buttons & Badges */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 44px;
+      padding: 0.68rem 1.4rem;
       border-radius: 999px;
       font-weight: 700;
+      font-size: 0.93rem;
       text-decoration: none;
-      transition: background 0.2s;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background 0.18s, border-color 0.18s, box-shadow 0.18s, transform 0.14s, color 0.18s;
+      white-space: nowrap;
     }
-    .cta-btn:hover { background-color: var(--dark); }
-    .hero {
-      max-width: 800px;
-      margin: 4rem auto 2rem;
-      padding: 0 1.5rem;
-      text-align: center;
+    .btn:active { transform: scale(0.98); }
+    .btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .btn-sm { min-height: 38px; padding: 0.45rem 1rem; font-size: 0.85rem; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(21, 62, 51, 0.20);
     }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--primary-hover) 0%, #0F2E25 100%);
+      box-shadow: 0 10px 26px rgba(21, 62, 51, 0.28);
+      transform: translateY(-1px);
+    }
+    .btn-outline {
+      background: var(--surface);
+      color: var(--dark);
+      border-color: var(--chip-border);
+      box-shadow: var(--shadow-xs);
+    }
+    .btn-outline:hover {
+      background: var(--tip-bg);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .btn-gold {
+      background: var(--gold-bg);
+      color: var(--gold-dark);
+      border-color: #E4D0AE;
+    }
+    .btn-gold:hover {
+      background: #EFE0C4;
+      border-color: var(--gold);
+    }
+    .btn-whatsapp {
+      background: #1B7A4B;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(27, 122, 75, 0.22);
+    }
+    .btn-whatsapp:hover {
+      background: #14613B;
+      transform: translateY(-1px);
+    }
+
     .badge {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
       background: var(--tag-bg);
       color: var(--primary);
-      padding: 0.3rem 0.8rem;
+      padding: 0.34rem 0.95rem;
       border-radius: 999px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
-    .hero h1 {
-      font-size: 2.4rem;
+      font-size: 0.82rem;
       font-weight: 800;
+      border: 1px solid rgba(32, 92, 74, 0.08);
+    }
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--primary);
+    }
+    .badge-gold {
+      background: var(--gold-bg);
+      color: var(--gold-dark);
+      border-color: rgba(181, 138, 69, 0.22);
+    }
+    .badge-gold .badge-dot { background: var(--gold); }
+
+    /* Layout & Section Rhythm */
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 1.35rem; }
+    section { padding: 4.5rem 0; }
+    .section-tinted {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.62) 0%, rgba(239, 244, 240, 0.55) 100%);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .section-head {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 2.6rem;
+    }
+    .section-head h2 {
+      font-size: clamp(1.65rem, 3vw, 2.25rem);
+      font-weight: 900;
       line-height: 1.3;
-      margin-bottom: 1rem;
+      margin: 0.7rem 0 0.55rem;
       color: var(--dark);
+      letter-spacing: -0.015em;
     }
-    .hero p {
-      font-size: 1.15rem;
+    .section-head p {
       color: var(--muted);
-      margin-bottom: 2rem;
-      max-width: 650px;
-      margin-left: auto;
-      margin-right: auto;
+      font-size: 1.03rem;
     }
-    .features {
-      max-width: 1080px;
-      margin: 3rem auto;
-      padding: 0 1.5rem;
+
+    /* Hero */
+    .hero {
+      padding: 2.75rem 0 3.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(32, 92, 74, 0.07) 1px, transparent 1px);
+      background-size: 26px 26px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent 88%);
+      -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent 88%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .hero-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: 1.12fr 0.88fr;
+      gap: 3rem;
+      align-items: center;
     }
+    .hero-content h1 {
+      font-size: clamp(2.1rem, 4.3vw, 3.15rem);
+      font-weight: 900;
+      line-height: 1.24;
+      margin: 1rem 0 1.1rem;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+    .hero-desc {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 1.85rem;
+      max-width: 580px;
+      line-height: 1.8;
+    }
+    .hero-cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.65rem;
+      align-items: center;
+    }
+    .version-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+    }
+    .trust-strip {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, max-content));
+      gap: 0.65rem 1rem;
+      margin-top: 0.35rem;
+    }
+    .trust-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid var(--border);
+      padding: 0.48rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--dark);
+      box-shadow: var(--shadow-xs);
+    }
+    .trust-pill svg {
+      width: 16px;
+      height: 16px;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+    @media (max-width: 960px) {
+      .hero { padding: 2rem 0 3rem; }
+      .hero-grid { grid-template-columns: 1fr; text-align: center; gap: 2.5rem; }
+      .hero-desc { margin-left: auto; margin-right: auto; }
+      .hero-cta-row { justify-content: center; }
+      .trust-strip { justify-content: center; grid-template-columns: repeat(2, auto); }
+    }
+    @media (max-width: 560px) {
+      .trust-strip { grid-template-columns: 1fr; max-width: 320px; margin-inline: auto; }
+      .trust-pill { justify-content: center; }
+      .hero-cta-row .btn { width: 100%; }
+    }
+
+    /* Interactive App Mockup */
+    .phone-stage {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .phone-glow {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(32, 92, 74, 0.16), rgba(181, 138, 69, 0.12), transparent 72%);
+      filter: blur(22px);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .phone-frame {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 356px;
+      background: var(--bg);
+      border: 9px solid #162E27;
+      border-radius: 38px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg), inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+      text-align: right;
+    }
+    .phone-notch {
+      width: 96px;
+      height: 18px;
+      background: #162E27;
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 14px;
+      margin: 0 auto 0.65rem;
+      position: relative;
+      z-index: 2;
+    }
+    .phone-header {
+      background: linear-gradient(145deg, var(--dark) 0%, var(--primary) 100%);
+      color: #fff;
+      padding: 0 1.15rem 2.25rem;
+      border-bottom-left-radius: 26px;
+      border-bottom-right-radius: 26px;
+      position: relative;
+      overflow: hidden;
+    }
+    .phone-header::after {
+      content: '';
+      position: absolute;
+      top: -36px;
+      left: -32px;
+      width: 120px;
+      height: 120px;
+      border-radius: 999px;
+      background: rgba(181, 138, 69, 0.18);
+      pointer-events: none;
+    }
+    .phone-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+      position: relative;
+      z-index: 1;
+    }
+    .phone-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-weight: 800;
+      font-size: 1rem;
+    }
+    .phone-brand img {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #fff;
+      padding: 1px;
+    }
+    .phone-pill {
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 0.18rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .phone-header h3 { font-size: 1.08rem; font-weight: 800; margin-bottom: 0.2rem; position: relative; z-index: 1; }
+    .phone-header p { font-size: 0.78rem; color: #E4EFE8; line-height: 1.5; position: relative; z-index: 1; }
+    .phone-body {
+      padding: 0 0.95rem 1.1rem;
+      margin-top: -1.3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      position: relative;
+      z-index: 2;
+    }
+    .phone-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1rem;
+      box-shadow: var(--shadow-sm);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+    .phone-card.is-switching {
+      opacity: 0.55;
+      transform: scale(0.985);
+    }
+    .phone-tags {
+      display: flex;
+      justify-content: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+    .phone-tag {
+      font-size: 0.69rem;
+      font-weight: 800;
+      padding: 0.16rem 0.55rem;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      color: var(--primary);
+    }
+    .phone-tag.gold {
+      background: var(--gold-bg);
+      color: var(--gold-dark);
+    }
+    .phone-question {
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin: 0.6rem 0 0.55rem;
+      text-align: center;
+      line-height: 1.55;
+      min-height: 3.1em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .phone-clarify {
+      background: var(--tip-bg);
+      color: var(--muted);
+      font-size: 0.76rem;
+      padding: 0.55rem 0.7rem;
+      border-radius: 12px;
+      text-align: center;
+      line-height: 1.55;
+    }
+    .phone-card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.45rem;
+      margin-top: 0.7rem;
+      padding-top: 0.65rem;
+      border-top: 1px dashed var(--border);
+    }
+    .phone-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      border: 1px solid var(--chip-border);
+      background: var(--surface-soft);
+      color: var(--dark);
+      border-radius: 999px;
+      padding: 0.4rem 0.65rem;
+      font-size: 0.74rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .phone-btn:hover { background: var(--tag-bg); border-color: var(--primary); color: var(--primary); }
+    .phone-btn.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .phone-btn.primary:hover { background: var(--dark); }
+    .phone-modes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .phone-mini {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 0.62rem 0.65rem;
+      text-align: right;
+      cursor: pointer;
+      transition: all 0.16s;
+    }
+    .phone-mini.active {
+      border-color: var(--primary);
+      background: #F4F9F6;
+      box-shadow: 0 4px 12px rgba(32, 92, 74, 0.08);
+    }
+    .phone-mini strong {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.81rem;
+      color: var(--dark);
+      margin-bottom: 0.1rem;
+    }
+    .phone-mini span { display: block; font-size: 0.69rem; color: var(--muted); }
+    .phone-hint {
+      margin-top: 0.8rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.85rem;
+      border-radius: 999px;
+    }
+
+    /* Feature & Content Grids */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+    @media (max-width: 960px) { .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 640px) { .grid-3 { grid-template-columns: 1fr; } }
+
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.8rem;
-      box-shadow: 0 4px 12px rgba(21, 62, 51, 0.04);
+      border-radius: var(--radius-lg);
+      padding: 1.65rem;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
     }
-    .card h3 {
-      font-size: 1.2rem;
-      color: var(--dark);
-      margin-bottom: 0.6rem;
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: var(--chip-border);
+      box-shadow: var(--shadow-md);
     }
-    .card p {
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-    .pricing {
-      max-width: 800px;
-      margin: 4rem auto;
-      padding: 0 1.5rem;
-      text-align: center;
-    }
-    .pricing-card {
-      background: var(--surface);
-      border: 2px solid var(--gold);
-      border-radius: 20px;
-      padding: 2.5rem 2rem;
-      margin-top: 2rem;
-    }
-    .price {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin: 1rem 0;
-    }
-    .faq {
-      max-width: 800px;
-      margin: 4rem auto;
-      padding: 0 1.5rem;
-    }
-    .faq-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.2rem 1.5rem;
+    .card-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 1rem;
     }
-    .faq-item h4 {
-      color: var(--dark);
-      margin-bottom: 0.4rem;
-      font-size: 1.05rem;
+    .icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 15px;
+      background: var(--tag-bg);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      font-weight: 800;
+      flex-shrink: 0;
     }
-    .faq-item p {
+    .icon-box svg { width: 23px; height: 23px; }
+    .icon-box.gold { background: var(--gold-bg); color: var(--gold-dark); }
+    .card-kicker {
+      font-size: 0.75rem;
+      font-weight: 800;
       color: var(--muted);
-      font-size: 0.95rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 0.16rem 0.6rem;
+      border-radius: 999px;
     }
+    .card h3 {
+      font-size: 1.12rem;
+      font-weight: 800;
+      margin-bottom: 0.45rem;
+      color: var(--ink);
+    }
+    .card p {
+      font-size: 0.93rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* Interactive Question Explorer */
+    .explorer-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 1.85rem;
+      box-shadow: var(--shadow-md);
+    }
+    @media (max-width: 640px) { .explorer-box { padding: 1.25rem; border-radius: var(--radius-lg); } }
+    .topic-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.65rem;
+    }
+    .topic-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      min-height: 42px;
+      border: 1px solid var(--chip-border);
+      background: var(--bg);
+      color: var(--dark);
+      padding: 0.48rem 1.05rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.87rem;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+    .topic-tab:hover { border-color: var(--primary); background: var(--tag-bg); }
+    .topic-tab.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 6px 16px rgba(32, 92, 74, 0.22);
+    }
+    .samples-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    @media (max-width: 960px) { .samples-grid { grid-template-columns: 1fr; } }
+    .sample-card {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.35rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.85rem;
+      transition: border-color 0.16s, transform 0.16s, box-shadow 0.16s;
+    }
+    .sample-card:hover {
+      border-color: var(--chip-border);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-2px);
+    }
+    .sample-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .sample-index {
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: var(--primary);
+      background: var(--tag-bg);
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      font-variant-numeric: tabular-nums;
+    }
+    .sample-copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .sample-copy-btn:hover { color: var(--primary); border-color: var(--primary); background: var(--tag-bg); }
+    .sample-copy-btn svg { width: 14px; height: 14px; }
+    .sample-q {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+    .sample-c {
+      font-size: 0.85rem;
+      color: var(--muted);
+      background: var(--surface);
+      padding: 0.7rem 0.85rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      border-right: 3px solid var(--gold);
+      line-height: 1.6;
+    }
+    .sample-c strong { color: var(--gold-dark); font-size: 0.78rem; display: block; margin-bottom: 0.15rem; }
+    .explorer-footer {
+      margin-top: 1.35rem;
+      padding-top: 1.15rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+    }
+    .explorer-note {
+      font-size: 0.88rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* Activity Visual Previews */
+    .activity-preview {
+      margin-top: auto;
+      padding-top: 0.95rem;
+    }
+    .activity-mini-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .mini-chip-row { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .mini-chip {
+      font-size: 0.73rem;
+      font-weight: 700;
+      padding: 0.22rem 0.6rem;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--chip-border);
+      color: var(--dark);
+    }
+    .mini-rank-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.34rem 0.6rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+    .mini-rank-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      background: var(--gold-bg);
+      color: var(--gold-dark);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+    .disc-dots {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.35rem;
+    }
+    .disc-dot-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.38rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.32rem 0.55rem;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+    .disc-dot-pill i {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    /* Steps Timeline */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.35rem;
+      position: relative;
+    }
+    @media (max-width: 860px) { .steps-grid { grid-template-columns: 1fr; } }
+    .step-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 1.55rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .step-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.45rem;
+    }
+    .step-num {
+      display: inline-flex;
+      width: 42px;
+      height: 42px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+      color: #fff;
+      font-weight: 900;
+      font-size: 1.05rem;
+      font-variant-numeric: tabular-nums;
+      box-shadow: 0 6px 14px rgba(32, 92, 74, 0.22);
+    }
+    .step-tag {
+      font-size: 0.74rem;
+      font-weight: 800;
+      color: var(--gold-dark);
+      background: var(--gold-bg);
+      padding: 0.18rem 0.65rem;
+      border-radius: 999px;
+    }
+    .step-card h3 { font-size: 1.12rem; font-weight: 800; color: var(--ink); }
+    .step-card p { font-size: 0.93rem; color: var(--muted); line-height: 1.7; }
+    .steps-cta {
+      margin-top: 1.75rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    /* Easy Contact & Activation Request Section */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap: 1.5rem;
+      align-items: stretch;
+    }
+    @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; } }
+    .contact-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 1.85rem;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+    }
+    @media (max-width: 600px) { .contact-card { padding: 1.3rem; border-radius: var(--radius-lg); } }
+    .form-group { margin-bottom: 1.05rem; }
+    .form-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+    .form-label {
+      display: block;
+      font-weight: 800;
+      font-size: 0.88rem;
+      color: var(--dark);
+    }
+    .reason-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+    .reason-chip {
+      border: 1px solid var(--chip-border);
+      background: var(--bg);
+      color: var(--dark);
+      padding: 0.48rem 0.9rem;
+      border-radius: 12px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: right;
+    }
+    .reason-chip:hover { border-color: var(--primary); background: var(--tag-bg); }
+    .reason-chip.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(32, 92, 74, 0.2);
+    }
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input, .select, .textarea {
+      width: 100%;
+      padding: 0.72rem 0.95rem;
+      border-radius: 14px;
+      border: 1.5px solid var(--chip-border);
+      background: var(--surface-soft);
+      color: var(--ink);
+      font-size: 0.94rem;
+      outline: none;
+      transition: border-color 0.16s, background 0.16s, box-shadow 0.16s;
+    }
+    .input:focus, .select:focus, .textarea:focus {
+      border-color: var(--primary);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(32, 92, 74, 0.10);
+    }
+    .input-with-btn { padding-left: 4.6rem; }
+    .input-action-btn {
+      position: absolute;
+      left: 0.45rem;
+      border: 1px solid var(--chip-border);
+      background: var(--surface);
+      color: var(--primary);
+      border-radius: 10px;
+      padding: 0.34rem 0.65rem;
+      font-size: 0.76rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .input-action-btn:hover { background: var(--tag-bg); }
+    .field-hint {
+      margin-top: 0.35rem;
+      font-size: 0.79rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .field-hint.valid { color: var(--success-text); font-weight: 700; }
+    .helper-link-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.79rem;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .textarea { resize: vertical; min-height: 92px; }
+    .notice-pill {
+      background: var(--gold-bg);
+      border: 1px solid #E5D4B6;
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #6B4D1E;
+      margin-top: auto;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+    }
+    .notice-pill svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; }
+
+    /* Message Preview Bubble */
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+    }
+    .preview-header h3 { font-size: 1.1rem; font-weight: 800; color: var(--ink); }
+    .ready-pill {
+      font-size: 0.74rem;
+      font-weight: 800;
+      background: var(--success-bg);
+      color: var(--success-text);
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+    }
+    .preview-hint {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.9rem;
+    }
+    .preview-box {
+      background: linear-gradient(180deg, #EEF5F0 0%, #F4F8F5 100%);
+      border: 1px solid var(--chip-border);
+      border-radius: 18px;
+      padding: 1.05rem 1.15rem;
+      font-size: 0.91rem;
+      white-space: pre-line;
+      color: var(--ink);
+      margin-bottom: 1.05rem;
+      min-height: 136px;
+      line-height: 1.75;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+    .contact-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+    .contact-actions .btn-whatsapp { grid-column: 1 / -1; }
+    @media (max-width: 500px) { .contact-actions { grid-template-columns: 1fr; } }
+    .support-meta-box {
+      margin-top: 1.15rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      font-size: 0.87rem;
+      color: var(--muted);
+    }
+    .support-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .copy-inline-btn {
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--primary);
+      border-radius: 8px;
+      padding: 0.15rem 0.55rem;
+      font-size: 0.76rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .copy-inline-btn:hover { background: var(--tag-bg); }
+
+    /* FAQ */
+    .faq-list {
+      max-width: 840px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    details.faq-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.1rem 1.35rem;
+      box-shadow: var(--shadow-xs);
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    details.faq-item[open] {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+    details.faq-item summary {
+      font-weight: 800;
+      font-size: 1.01rem;
+      color: var(--ink);
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    details.faq-item summary::-webkit-details-marker { display: none; }
+    .faq-plus {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--tag-bg);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      transition: transform 0.2s, background 0.2s, color 0.2s;
+    }
+    details.faq-item[open] .faq-plus {
+      background: var(--primary);
+      color: #fff;
+      transform: rotate(45deg);
+    }
+    details.faq-item p {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.75;
+    }
+
+    /* Ethical Boundaries */
+    .boundaries-card {
+      background: linear-gradient(135deg, var(--dark) 0%, #1C5040 58%, var(--primary) 100%);
+      color: #fff;
+      border-radius: var(--radius-xl);
+      padding: 2.25rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+    .boundaries-card::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      left: -60px;
+      width: 210px;
+      height: 210px;
+      border-radius: 999px;
+      background: rgba(181, 138, 69, 0.14);
+      pointer-events: none;
+    }
+    @media (max-width: 780px) {
+      .boundaries-card { grid-template-columns: 1fr; padding: 1.5rem; }
+    }
+    .boundary-col {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 20px;
+      padding: 1.35rem 1.4rem;
+      position: relative;
+      z-index: 1;
+    }
+    .boundary-col h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      color: #F7EBCD;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .boundary-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.93rem;
+      color: #E7F0EB;
+    }
+    .boundary-col li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      line-height: 1.65;
+    }
+    .boundary-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 900;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+    .boundary-icon.yes { background: rgba(255, 255, 255, 0.18); color: #A9F0CA; }
+    .boundary-icon.no { background: rgba(246, 236, 217, 0.16); color: #F7D49A; }
+
+    /* Footer */
     footer {
       background: var(--surface);
       border-top: 1px solid var(--border);
-      padding: 2.5rem 1.5rem;
-      text-align: center;
+      padding: 2.5rem 1.35rem;
       color: var(--muted);
       font-size: 0.9rem;
+    }
+    .footer-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .footer-brand img { width: 32px; height: 32px; border-radius: 9px; border: 1px solid var(--border); }
+    .footer-links { display: flex; gap: 1.25rem; flex-wrap: wrap; align-items: center; }
+    .footer-links a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 700;
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: var(--dark); text-decoration: underline; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 1.4rem;
+      left: 1.4rem;
+      background: var(--dark);
+      color: #fff;
+      padding: 0.78rem 1.25rem;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 250;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="nav-container">
-      <a href="#" class="brand">وفاق</a>
-      <a href="https://wa.me/?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%20%D9%81%D9%8A%20%D8%A8%D8%A7%D9%82%D8%A9%20%D9%88%D9%81%D8%A7%D9%82%20%D9%84%D9%84%D9%85%D8%AE%D8%B7%D9%88%D8%A8%D9%8A%D9%86" class="cta-btn">طلب الاشتراك عبر واتساب</a>
+  <div class="page-backdrop" aria-hidden="true"></div>
+
+  <div class="announcement-bar show style-success" id="announcementBar" role="status" aria-live="polite">
+    <div class="announcement-inner">
+      <span class="announcement-title" id="announcementTitle">تجربة مجانية</span>
+      <span id="announcementMessage">ابدأ استخدام التطبيق مجانًا فور التثبيت لمدة أسبوعين (14 يومًا) حتى دون إنترنت — وبعد انتهاء المدة يُغلق تلقائيًا لطلب التفعيل.</span>
     </div>
+  </div>
+
+  <header>
+    <div class="nav-shell" id="navShell">
+      <div class="nav-container">
+        <a href="#" class="brand">
+          <img src="./wefaq-logo.png" alt="شعار وفاق">
+          <span id="navBrandName">وفاق</span>
+        </a>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#features">المميزات</a></li>
+          <li><a href="#explorer">نماذج الأسئلة</a></li>
+          <li><a href="#activities">الأنشطة</a></li>
+          <li><a href="#how-it-works">كيف تبدأ</a></li>
+          <li><a href="#faq">الأسئلة الشائعة</a></li>
+        </ul>
+        <div class="nav-actions">
+          <a href="#contact" class="btn btn-primary btn-sm btn-nav-primary">تواصل معنا</a>
+          <button type="button" class="menu-toggle" id="menuToggleBtn" aria-expanded="false" aria-controls="mobileDrawer">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+            <span>القائمة</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <nav class="mobile-drawer" id="mobileDrawer" aria-label="التنقل على الجوال">
+      <a href="#features">المميزات</a>
+      <a href="#explorer">نماذج الأسئلة</a>
+      <a href="#activities">الأنشطة</a>
+      <a href="#how-it-works">كيف تبدأ</a>
+      <a href="#faq">الأسئلة الشائعة</a>
+      <a href="./privacy.html">سياسة الخصوصية والحدود</a>
+      <a href="#contact">تواصل معنا</a>
+    </nav>
   </header>
 
   <main>
+    <!-- Hero -->
     <section class="hero">
-      <div class="badge">جلسات حوارية للمقبلين على الزواج</div>
-      <h1>حوار يقرّب الفهم بهدوء واحترام</h1>
-      <p>مساحة تساعد المخطوبين على فتح المواضيع الأساسية للحياة المشتركة، واكتشاف أولويات كل طرف دون ضغط أو إحراج.</p>
-      <a href="https://wa.me/?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%20%D9%81%D9%8A%20%D8%A8%D8%A7%D9%82%D8%A9%20%D9%88%D9%81%D8%A7%D9%82%20%D9%84%D9%84%D9%85%D8%AE%D8%B7%D9%88%D8%A8%D9%8A%D9%86" class="cta-btn" style="padding: 0.8rem 2rem; font-size: 1.1rem;">تواصل لطلب كود التفعيل</a>
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <span class="badge" id="heroBadge"><span class="badge-dot"></span><span>تجربة مجانية أسبوعين دون إنترنت — للمقبلين على الزواج</span></span>
+          <h1 id="heroTitle">حوار يقرّب الفهم بهدوء واحترام</h1>
+          <p class="hero-desc" id="heroSubtitle">
+            مساحة منظمة تساعد المخطوبين على فتح المواضيع الأساسية للحياة المشتركة، وفهم أولويات كل طرف دون ضغط أو إحراج. ابدأ مجانًا لمدة أسبوعين فور التثبيت حتى دون إنترنت، ثم يُغلق التطبيق تلقائيًا للتفعيل الدائم بخصوصية كاملة.
+          </p>
+          <div class="hero-cta-row">
+            <a href="#contact" id="heroPrimaryCta" class="btn btn-primary">
+              <span>تواصل لطلب التفعيل أو الاستفسار</span>
+            </a>
+            <a href="#explorer" id="heroSecondaryCta" class="btn btn-outline">
+              <span>تصفح نماذج الأسئلة</span>
+            </a>
+            <a href="https://github.com/abdo6400/wefaq/releases/latest/download/app-release.apk" id="heroDownloadBtn" class="btn btn-gold" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span id="heroDownloadLabel">تنزيل التطبيق (أسبوعان مجانًا)</span>
+            </a>
+            <span class="version-chip" id="appVersionChip">Android v0.2.0+16</span>
+          </div>
+          <div class="trust-strip" id="trustStrip">
+            <span class="trust-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+              <span>تجربة مجانية أسبوعين فور التثبيت</span>
+            </span>
+            <span class="trust-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+              <span>يعمل دون إنترنت ويُغلق تلقائيًا بعد 14 يومًا</span>
+            </span>
+            <span class="trust-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+              <span>خصوصية 100% بدون حسابات</span>
+            </span>
+            <span class="trust-pill">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>تفعيل مباشر بعد التجربة بدون دفع إلكتروني</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="phone-stage">
+          <div class="phone-glow" aria-hidden="true"></div>
+          <div class="phone-frame" aria-label="معاينة تفاعلية لواجهة تطبيق وفاق">
+            <div class="phone-header">
+              <div class="phone-notch" aria-hidden="true"></div>
+              <div class="phone-header-top">
+                <div class="phone-brand">
+                  <img src="./wefaq-logo.png" alt="وفاق">
+                  <span id="mockupBrandName">وفاق</span>
+                </div>
+                <span class="phone-pill" id="mockupModeBadge">حوار يقرّب الفهم</span>
+              </div>
+              <h3 id="mockupTitle">أهلًا بكم في وفاق</h3>
+              <p id="mockupSubtitle">مساحة تساعدكم تفتحوا مواضيع مهمة، وتفهموا بعض بهدوء واحترام.</p>
+            </div>
+            <div class="phone-body">
+              <div class="phone-card" id="phonePreviewCard">
+                <div class="phone-tags">
+                  <span class="phone-tag" id="mockupSessionTag">مساحة للحوار</span>
+                  <span class="phone-tag gold" id="mockupTopicTag">التواصل</span>
+                </div>
+                <div class="phone-question" id="mockupQuestion">إيه الطريقة اللي بتحب حد يسمعك بيها؟</div>
+                <div class="phone-clarify" id="mockupClarify">معرفة كيف يفضل كل طرف التفاعل والإنصات دون مقاطعة.</div>
+                <div class="phone-card-actions">
+                  <button type="button" class="phone-btn primary" id="mockupNextBtn">
+                    <span>سؤال آخر</span>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                  </button>
+                  <button type="button" class="phone-btn" id="mockupCopyBtn">
+                    <span>نسخ</span>
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="phone-modes" role="group" aria-label="أوضاع الجلسة في المعاينة">
+                <button type="button" class="phone-mini active" data-preview-mode="together">
+                  <strong><span>مع بعض</span><span>●</span></strong>
+                  <span>حوار مباشر من جهاز واحد</span>
+                </button>
+                <button type="button" class="phone-mini" data-preview-mode="call">
+                  <strong><span>في مكالمة</span><span>○</span></strong>
+                  <span>قراءة الأسئلة أثناء مكالمتكم</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="phone-hint">جرّب تبديل السؤال أو وضع الحوار مباشرة داخل المعاينة</div>
+        </div>
+      </div>
     </section>
 
-    <section class="features">
-      <div class="card">
-        <h3>مع بعض أو في مكالمة</h3>
-        <p>يمكنكم تصفح الأسئلة معًا من جهاز واحد مباشرة، أو قراءتها خلال مكالمتكم الهاتفية العادية بكل سلاسة.</p>
-      </div>
-      <div class="card">
-        <h3>خصوصية تامة 100%</h3>
-        <p>التطبيق لا يطلب تسجيل حساب، ولا يسجل أي صوت أو إجابات؛ الحوار بينكما فقط وكل شيء محفوظ على هاتفك محليًا.</p>
-      </div>
-      <div class="card">
-        <h3>كود واحد لجهازين</h3>
-        <p>رمز اشتراك واحد يربط جهازك وجهاز شريكك معًا لاقتسام جلسات الباقة بالتساوي والتنسيق المشترك.</p>
-      </div>
-      <div class="card">
-        <h3>أنشطة وسيناريوهات واقعية</h3>
-        <p>بجانب الأسئلة المباشرة، يقدم التطبيق مواقف حياتية وترتيب أولويات لتبادل الآراء والتفاهم العملي.</p>
+    <!-- Features -->
+    <section id="features">
+      <div class="container">
+        <div class="section-head">
+          <span class="badge" id="featuresBadge"><span class="badge-dot"></span><span>لماذا وفاق؟</span></span>
+          <h2 id="featuresTitle">مصمم لحوار ناضج ومريح</h2>
+          <p id="featuresSubtitle">كل تفصيلة في وفاق تهدف لإزالة التوتر وإتاحة مساحة صادقة للتعارف الواعي.</p>
+        </div>
+        <div class="grid-3" id="featuresGrid"></div>
       </div>
     </section>
 
-    <section class="pricing">
-      <h2>باقة وفاق للمخطوبين</h2>
-      <p style="color: var(--muted);">كل ما تحتاجه لبدء حوار متوازن وصادق</p>
-      <div class="pricing-card">
-        <div class="badge" style="background: #F5ECDD; color: var(--gold);">ترخيص لجهازين</div>
-        <div class="price">250 ج.م <span style="font-size: 1rem; color: var(--muted); font-weight: normal;">/ للاشتراك الكامل</span></div>
-        <ul style="list-style: none; text-align: right; margin: 1.5rem 0; line-height: 2.2;">
-          <li>✓ تفعيل على جهازين معًا (رمز واحد لك ولشريكك)</li>
-          <li>✓ 20 جلسة حوارية شاملة عبر كافة مجالات الحياة</li>
-          <li>✓ وصول كامل لكافة السيناريوهات والأنشطة التفاعلية</li>
-          <li>✓ صلاحية تمتد إلى 6 أشهر مع دعم فني مخصص</li>
-          <li>✓ خصوصية مضمونة وعدم تسجيل أي بيانات شخصية</li>
-        </ul>
-        <a href="https://wa.me/?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%20%D9%81%D9%8A%20%D8%A8%D8%A7%D9%82%D8%A9%20%D9%88%D9%81%D8%A7%D9%82%20%D9%84%D9%84%D9%85%D8%AE%D8%B7%D9%88%D8%A8%D9%8A%D9%86" class="cta-btn" style="display: block; width: 100%; text-align: center;">طلب الباقة الآن عبر واتساب</a>
+    <!-- Interactive Sample Questions Explorer -->
+    <section id="explorer" class="section-tinted">
+      <div class="container">
+        <div class="section-head">
+          <span class="badge badge-gold" id="explorerBadge"><span class="badge-dot"></span><span>5 محاور حياتية شاملة</span></span>
+          <h2 id="explorerTitle">تصفح نماذج من أسئلة وفاق</h2>
+          <p id="explorerSubtitle">أسئلة متدرجة من التمهيدي إلى الأعمق مع توضيح للهدف من كل سؤال.</p>
+        </div>
+        <div class="explorer-box">
+          <div class="topic-tabs" id="topicTabs" role="tablist" aria-label="محاور الأسئلة">
+            <button type="button" class="topic-tab active" role="tab" aria-selected="true" data-topic="communication">التواصل وإدارة الخلافات</button>
+            <button type="button" class="topic-tab" role="tab" aria-selected="false" data-topic="dailyLife">الحياة اليومية والمسؤوليات</button>
+            <button type="button" class="topic-tab" role="tab" aria-selected="false" data-topic="familyRelations">الأهل والحدود الأسرية</button>
+            <button type="button" class="topic-tab" role="tab" aria-selected="false" data-topic="finances">المالية والتطلعات</button>
+            <button type="button" class="topic-tab" role="tab" aria-selected="false" data-topic="coreValues">القيم والمبادئ</button>
+          </div>
+          <div class="samples-grid" id="samplesGrid" role="tabpanel"></div>
+          <div class="explorer-footer">
+            <span class="explorer-note">يمكنك نسخ أي سؤال مباشرة ومشاركته لبدء حوار هادئ الآن.</span>
+            <a href="#contact" class="btn btn-outline btn-sm">اطلب التفعيل لفتح المكتبة الكاملة</a>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="faq">
-      <h2 style="text-align: center; margin-bottom: 2rem;">الأسئلة الشائعة</h2>
-      <div class="faq-item">
-        <h4>هل يسجل التطبيق صوت المكالمة أو الإجابات؟</h4>
-        <p>لا، وفاق لا يسجل أي مكالمات أو إجابات ولا يطلب أي إذن لتسجيل الصوت؛ التطبيق أداة مساعدة لطرح الأسئلة فقط.</p>
+    <!-- Activities Showcase -->
+    <section id="activities">
+      <div class="container">
+        <div class="section-head">
+          <span class="badge" id="activitiesBadge"><span class="badge-dot"></span><span>أكثر من مجرد أسئلة</span></span>
+          <h2 id="activitiesTitle">أنشطة وتفاعلات لكسر الجمود</h2>
+          <p id="activitiesSubtitle">ألعاب حوارية هادئة تكشف طريقة التفكير والأولويات الواقعية دون أي تقييمات قسرية.</p>
+        </div>
+        <div class="grid-3" id="activitiesGrid"></div>
       </div>
-      <div class="faq-item">
-        <h4>كيف يتم تفعيل الاشتراك بعد الدفع؟</h4>
-        <p>بعد تأكيد التحويل عبر وسيلة الدفع المفضلة (إنستاباي أو محفظة إلكترونية)، يرسل لك فريق الدعم رمز تفعيل (مثل: WFQ-XXXX-XXXX) تدخله في التطبيق لتفعيله فورًا لك ولشريكك.</p>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="section-tinted">
+      <div class="container">
+        <div class="section-head">
+          <span class="badge" id="howBadge"><span class="badge-dot"></span><span>خطوات واضحة وبسيطة</span></span>
+          <h2 id="howTitle">كيف تبدأ استخدام وفاق؟</h2>
+          <p id="howSubtitle">ابدأ مجانًا لمدة أسبوعين فور التثبيت، وعند انتهاء المهلة تواصل معنا لتفعيل جهازيكما — بدون أي بوابات دفع في الموقع.</p>
+        </div>
+        <div class="steps-grid" id="stepsGrid"></div>
+        <div class="steps-cta">
+          <a href="#contact" class="btn btn-primary">ابدأ بطلب التفعيل الآن ↓</a>
+          <a href="./activate.html" class="btn btn-outline">لديك رابط تفعيل؟ صفحة المساعدة</a>
+        </div>
       </div>
-      <div class="faq-item">
-        <h4>ماذا لو تم تغيير الهاتف أو إعادة تثبيت التطبيق؟</h4>
-        <p>يمكنك مراسلة خدمة العملاء برمز التفعيل ومعرف التثبيت الجديد ليتم نقله دون أي تكلفة إضافية.</p>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+      <div class="container">
+        <div class="section-head">
+          <span class="badge badge-gold" id="contactBadge"><span class="badge-dot"></span><span>تواصل مباشر فقط — بدون دفع</span></span>
+          <h2 id="contactTitle">تواصل مع فريق وفاق</h2>
+          <p id="contactSubtitle">أرسل استفسارك، اطلب كود تفعيل لجهازك، أو شاركنا ملاحظاتك عبر الرسالة الجاهزة أدناه.</p>
+        </div>
+        <div class="contact-grid">
+          <div class="contact-card">
+            <form id="contactForm">
+              <div class="form-group">
+                <label class="form-label" for="contactReason">1. اختر سبب التواصل بضغطة</label>
+                <div class="reason-chips" id="contactReasonChips" role="radiogroup" aria-label="سبب التواصل"></div>
+                <select id="contactReason" class="select sr-only" tabindex="-1" aria-hidden="true">
+                  <option value="طلب كود تفعيل لتطبيق وفاق (بعد انتهاء الأسبوعين)">طلب كود تفعيل لتطبيق وفاق (بعد انتهاء الأسبوعين)</option>
+                  <option value="نقل التفعيل لجهاز جديد أو تجديد الصلاحية">نقل التفعيل لجهاز جديد أو تجديد الصلاحية</option>
+                  <option value="استفسار عام عن النظام أو التجربة المجانية">استفسار عام عن النظام أو التجربة المجانية</option>
+                  <option value="اقتراح تطوير أو ملاحظة على المحتوى">اقتراح تطوير أو ملاحظة على المحتوى</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="contactName">2. الاسم (اختياري)</label>
+                <input type="text" id="contactName" class="input" placeholder="مثال: أحمد" autocomplete="name">
+              </div>
+              <div class="form-group">
+                <div class="form-label-row">
+                  <label class="form-label" for="contactInstId">3. معرّف التثبيت من التطبيق (اختياري)</label>
+                </div>
+                <div class="input-wrap">
+                  <input type="text" id="contactInstId" class="input input-with-btn" dir="ltr" placeholder="inst_xxxxxxxx-xxxx-4xxx-xxxx-xxxxxxxxxxxx" spellcheck="false">
+                  <button type="button" class="input-action-btn" id="pasteInstIdBtn">لصق</button>
+                </div>
+                <div class="field-hint" id="instIdHint">
+                  <span>تجده في التطبيق داخل شاشة التفعيل أو الدعم.</span>
+                  <button type="button" class="helper-link-btn" id="addSecondDeviceBtn">+ أضف معرّف الجهاز الثاني</button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="contactNotes">4. رسالتك أو تفاصيل إضافية (اختياري)</label>
+                <textarea id="contactNotes" class="textarea" placeholder="اكتب استفسارك أو أضف معرّف الجهاز الثاني إن وجد..."></textarea>
+              </div>
+            </form>
+            <div class="notice-pill" id="siteNoticeBox">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <span id="siteNoticeText">التواصل مباشر عبر فريق الدعم بدون أي معاملات مالية أو دفع إلكتروني داخل الموقع.</span>
+            </div>
+          </div>
+
+          <div class="contact-card">
+            <div class="preview-header">
+              <h3 id="previewHeading">معاينة الرسالة الجاهزة</h3>
+              <span class="ready-pill">جاهزة للإرسال</span>
+            </div>
+            <p class="preview-hint" id="previewHint">
+              راجع النص التالي ثم اختر وسيلة التواصل المناسبة لك (لن يتم إرسال أي شيء إلا بعد ضغطك على الإرسال):
+            </p>
+            <div class="preview-box" id="messagePreview" aria-live="polite"></div>
+            <div class="contact-actions">
+              <a href="#" class="btn btn-whatsapp" id="whatsappSendBtn" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                <span id="whatsappBtnLabel">فتح في واتساب</span>
+              </a>
+              <button type="button" class="btn btn-primary" id="copyContactMsgBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span>نسخ الرسالة</span>
+              </button>
+              <a href="#" class="btn btn-outline" id="emailSendBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span>إرسال عبر البريد</span>
+              </a>
+              <a href="#" class="btn btn-gold" id="telegramSendBtn" target="_blank" rel="noopener noreferrer" style="display:none;grid-column:1 / -1;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                <span id="telegramBtnLabel">تواصل عبر تيليجرام</span>
+              </a>
+            </div>
+            <div class="support-meta-box">
+              <div class="support-row">
+                <div><strong>ساعات الدعم:</strong> <span id="supportHoursText">يوميًا من 10 صباحًا حتى 10 مساءً (بتوقيت القاهرة)</span></div>
+              </div>
+              <div class="support-row">
+                <div><strong>البريد الإلكتروني:</strong> <code id="supportEmailText">support@wefaq.app</code></div>
+                <button type="button" class="copy-inline-btn" id="copyEmailBtn">نسخ البريد</button>
+              </div>
+              <div class="support-row" id="supportPhoneRow" style="display:none;">
+                <div><strong>الهاتف / الخط المباشر:</strong> <code id="supportPhoneText"></code></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section-tinted">
+      <div class="container">
+        <div class="section-head">
+          <span class="badge" id="faqBadge"><span class="badge-dot"></span><span>الأسئلة الشائعة</span></span>
+          <h2 id="faqTitle">إجابات واضحة وشفافة</h2>
+        </div>
+        <div class="faq-list" id="faqList"></div>
+      </div>
+    </section>
+
+    <!-- Ethical Boundaries -->
+    <section id="boundariesSection">
+      <div class="container">
+        <div class="boundaries-card">
+          <div class="boundary-col">
+            <h3>
+              <span class="boundary-icon yes">✓</span>
+              <span id="whatIsTitle">ما هو نظام وفاق؟</span>
+            </h3>
+            <ul id="whatIsList"></ul>
+          </div>
+          <div class="boundary-col">
+            <h3>
+              <span class="boundary-icon no">×</span>
+              <span id="whatIsNotTitle">ما الذي ليس وفاقًا؟</span>
+            </h3>
+            <ul id="whatIsNotList"></ul>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>جميع الحقوق محفوظة © وفاق 2026 | مصمم وفقًا لضوابط حماية البيانات الشخصية وقوانين التجارة الإلكترونية المصرية.</p>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="./wefaq-logo.png" alt="شعار وفاق">
+        <div id="footerText">جميع الحقوق محفوظة © وفاق 2026 | تواصل مباشر وخصوصية تامة</div>
+      </div>
+      <div class="footer-links">
+        <a href="./privacy.html">سياسة الخصوصية والحدود</a>
+        <a href="./activate.html">مساعدة التفعيل</a>
+        <a href="#contact">تواصل معنا</a>
+      </div>
+    </div>
   </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      const SAMPLE_BANK = {
+        communication: [
+          { q: 'إيه اللي بيساعدك تتكلم براحة عن يومك؟', c: 'الهدف معرفة أسلوب الاستماع والتواصل المفضل.' },
+          { q: 'لما يحصل سوء تفاهم، بتفضل نتكلم فورًا ولا ناخد وقت نهدى الأول؟', c: 'يساعد على وضع قاعدة محترمة لوقت النقاش عند الاختلاف.' },
+          { q: 'إيه الطريقة اللي بتحسسك بالتقدير والاحتواء في الكلام؟', c: 'معرفة اللغات والكلمات التي تترك أثرًا طيبًا.' },
+        ],
+        dailyLife: [
+          { q: 'إزاي بتشوف توزيع المسؤوليات اليومية في البيت؟', c: 'مناقشة التوقعات الواقعية للتعاون والمشاركة.' },
+          { q: 'بتحب تقضي يوم الإجازة الأسبوعية إزاي في العادي؟', c: 'التنسيق بين الحاجة للراحة والأنشطة والزيارات.' },
+          { q: 'إيه العادات اليومية الصباحية أو المسائية اللي بتفرق معاك؟', c: 'فهم إيقاع اليوم الشخصي لكل طرف.' },
+        ],
+        familyRelations: [
+          { q: 'إزاي نوازن بين بر الأهل وخصوصية قرارات بيتنا؟', c: 'توضيح الحدود الصحية بين الود الأسري والاستقلال.' },
+          { q: 'ما المناسبات العائلية اللي بتحرص على حضورها باستمرار؟', c: 'فهم أولويات التواصل مع العائلتين.' },
+          { q: 'لو حصل تدخل غير مقصود من حد قريب، نتعامل معاه إزاي؟', c: 'الاتفاق على أسلوب مهذب وواحد لحفظ الاحترام.' },
+        ],
+        finances: [
+          { q: 'ما أولوياتك في الادخار مقابل المصروفات والترفيه؟', c: 'فهم العقلية المالية والأمان المادي لكل طرف.' },
+          { q: 'إزاي نخطط للالتزامات والظروف المالية الطارئة؟', c: 'بناء رؤية هادئة لمواجهة التحديات المادية معًا.' },
+          { q: 'إيه الأهداف المالية اللي تحب نحققها في أول سنتين؟', c: 'تقريب الطموحات والخطط العملية للمستقبل.' },
+        ],
+        coreValues: [
+          { q: 'ما المبادئ اللي ما بتتغيرش عندك في أصعب القرارات؟', c: 'استكشاف البوصلة الأخلاقية والقيمية المشتركة.' },
+          { q: 'إيه أهم قيمة نفسك نربي عليها أولادنا بإذن الله؟', c: 'التعرف على الرؤية التربوية المستقبلية.' },
+          { q: 'إيه مفهومك عن السكينة والمودة في الحياة الزوجية؟', c: 'مشاركة الصورة الذهنية لمعنى البيت المستقر.' },
+        ],
+      };
+
+      const TOPIC_LABELS = {
+        communication: 'التواصل',
+        dailyLife: 'الحياة اليومية',
+        familyRelations: 'الأهل والحدود',
+        finances: 'المالية',
+        coreValues: 'القيم والمبادئ',
+      };
+
+      const DEFAULT_FEATURES = [
+        {
+          icon: '🤝',
+          title: 'مع بعض أو في مكالمة',
+          description: 'استخدموا التطبيق سويًا من جهاز واحد في اللقاءات العائلية، أو اقرأوا الأسئلة بسلاسة أثناء مكالمتكم الهاتفية المعتادة.',
+        },
+        {
+          icon: '🔒',
+          title: 'خصوصية مطلقة 100%',
+          description: 'بدون إنشاء حسابات، وبدون ميكروفون أو تسجيل إجابات. الجلسات والمفضلة تُحفظ محليًا على هاتفك فقط.',
+        },
+        {
+          icon: '🗝️',
+          title: 'تجربة أسبوعين ثم تفعيل موقّع',
+          description: 'ابدأ مجانًا لمدة 14 يومًا فور التثبيت حتى دون إنترنت، ثم يُغلق التطبيق تلقائيًا بعد الأسبوعين للمطالبة بكود تفعيل موقّع لجهازك أو جهازيكما.',
+        },
+        {
+          icon: '🎯',
+          title: 'مفضلة ومنع تكرار الأسئلة',
+          description: 'احفظ الأسئلة التي تهمكما للعودة إليها لاحقًا، وفعّل خيار تجنب الأسئلة السابقة لفتح آفاق جديدة في كل جلسة.',
+        },
+        {
+          icon: '⏸️',
+          title: 'حرية كاملة دون ضغط',
+          description: 'لكل طرف الحق في تخطي أي سؤال دون إحراج، مع إمكانية إيقاف الجلسة واستئنافها لاحقًا من نفس النقطة.',
+        },
+        {
+          icon: '🔄',
+          title: 'يعمل دون إنترنت مع تحديثات دورية',
+          description: 'مكتبة الأسئلة والأنشطة متوفرة معك دون اتصال، مع خيار تحديث الكتالوج يدويًا عند الرغبة دون المساس بخصوصيتك.',
+        },
+      ];
+
+      const DEFAULT_ACTIVITIES = [
+        {
+          icon: '💬',
+          title: 'لو حصل كده؟ (سيناريوهات)',
+          description: 'مواقف حياتية واقعية مثل تغيير المواعيد المفاجئ أو ضغط العمل، مع محاور نقاش تساعدكما على الاتفاق قبل حدوث الموقف.',
+        },
+        {
+          icon: '📊',
+          title: 'رتّب أولوياتك',
+          description: 'تمارين لترتيب أولويات الميزانية أو وقت العطلة أو إدارة الخلافات، ومقارنة أسباب كل طرف بهدوء وتفهم.',
+        },
+        {
+          icon: '🧭',
+          title: 'استكشف أسلوبك (مستوحى من DISC)',
+          description: 'تمرين تأملي اختياري يساعد كل طرف على فهم أسلوب تواصله المفضل. هو نشاط استكشافي فقط وليس اختبارًا تشخيصيًا أو مقياس توافق.',
+        },
+      ];
+
+      const DEFAULT_STEPS = [
+        {
+          title: 'ثبّت التطبيق وابدأ مجانًا لمدة أسبوعين',
+          description: 'افتح وفاق بعد التثبيت مباشرة وابدأ الجلسات والأنشطة مجانًا لمدة 14 يومًا دون كود أو اتصال بالإنترنت.',
+        },
+        {
+          title: 'يُغلق التطبيق تلقائيًا بعد الأسبوعين',
+          description: 'بعد انتهاء الـ 14 يومًا (حتى دون إنترنت) يُغلق الوصول تلقائيًا وتظهر شاشة التفعيل ومعرّف التثبيت الخاص بجهازك (inst_).',
+        },
+        {
+          title: 'تواصل معنا لاستلام كود التفعيل',
+          description: 'أرسل معرّف التثبيت (لجهازك أو جهازيكما) عبر الواتساب أو البريد لتستلم كود أو رابط التفعيل الموقّع وتتابع الحوار.',
+        },
+      ];
+
+      const DEFAULT_FAQ = [
+        {
+          question: 'هل التطبيق مجاني في البداية أم يحتاج تفعيلًا فوريًا؟',
+          answer: 'يمكنك تنزيل وفاق واستخدامه فورًا مجانًا لمدة أسبوعين (14 يومًا) دون كود أو إنترنت. بعد انتهاء الأسبوعين يُغلق التطبيق تلقائيًا حتى في وضع عدم الاتصال، وتظهر شاشة التفعيل لإدخال كود أو رابط التفعيل.',
+        },
+        {
+          question: 'هل يسجل التطبيق صوت المكالمة أو إجاباتنا؟',
+          answer: 'لا مطلقًا. وفاق لا يطلب إذن الميكروفون ولا يسجل أي مكالمات أو إجابات؛ هو أداة لعرض الأسئلة وتنظيم الحوار، وكل اختيارات الجلسة والمفضلة تبقى محليًا على هاتفك.',
+        },
+        {
+          question: 'كيف أحصل على كود التفعيل بعد انتهاء الأسبوعين أو أنقله لجهاز جديد؟',
+          answer: 'عند انتهاء الفترة التجريبية أو من شاشة التفعيل انسخ معرّف التثبيت (يبدأ بـ inst_) ثم تواصل معنا عبر قسم «تواصل معنا» لإصدار كود أو رابط التفعيل المخصص لجهازك أو استبدال جهاز مفقود.',
+        },
+        {
+          question: 'هل توجد عمليات دفع أو اشتراكات إلكترونية داخل الموقع أو التطبيق؟',
+          answer: 'لا، هذا الموقع تعريفي وتواصلي فقط ولا يتضمن أي بوابات دفع أو تحصيل إلكتروني. كل الطلبات والاستفسارات تتم عبر التواصل المباشر مع فريق الدعم.',
+        },
+        {
+          question: 'هل يعمل التطبيق بدون اتصال بالإنترنت؟',
+          answer: 'نعم، تعمل الجلسات والأنشطة والمفضلة — وكذلك احتساب مهلة التجربة المجانية والإغلاق التلقائي بعد أسبوعين — بالكامل دون إنترنت. يتصل التطبيق بالإنترنت فقط عند ضغطك يدويًا على «تحديث الأسئلة».',
+        },
+      ];
+
+      const DEFAULT_WHAT_IS = [
+        'مساعد حواري منظم للمخطوبين والمقبلين على الزواج (18+).',
+        'أسئلة متدرجة وأنشطة واقعية تحفّز الفهم المتبادل باحترام.',
+        'تصميم يضع الخصوصية الكاملة وعدم تسجيل الإجابات كأولوية قصوى.',
+      ];
+
+      const DEFAULT_WHAT_IS_NOT = [
+        'ليس تطبيق تعارف أو مطابقة أو محادثة ومكالمات مدمجة.',
+        'لا يقدّم فتاوى شرعية ولا استشارات نفسية أو طبية متخصصة.',
+        'لا يحسب نسب توافق رقمية ولا يضمن نتائج الزواج.',
+      ];
+
+      const SVG_ICONS = {
+        '🤝': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+        '🔒': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+        '🗝️': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>',
+        '🎯': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>',
+        '⏸️': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></svg>',
+        '🔄': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>',
+        '💬': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+        '📊': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
+        '🧭': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>',
+      };
+
+      const TRUST_SVGS = [
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+      ];
+
+      const state = {
+        topic: 'communication',
+        whatsappNumber: '',
+        email: 'support@wefaq.app',
+        supportHours: 'يوميًا من 10 صباحًا حتى 10 مساءً (بتوقيت القاهرة)',
+        baseTemplate: 'السلام عليكم، أود التواصل بخصوص تطبيق وفاق.',
+        previewIndex: -1,
+      };
+
+      const el = (id) => document.getElementById(id);
+
+      function showToast(msg) {
+        const t = el('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2800);
+      }
+
+      async function copyTextSafe(text, successMsg) {
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+            showToast(successMsg);
+            return true;
+          }
+        } catch (_) {}
+        const tmp = document.createElement('textarea');
+        tmp.value = text;
+        tmp.setAttribute('readonly', '');
+        tmp.style.position = 'fixed';
+        tmp.style.opacity = '0';
+        document.body.appendChild(tmp);
+        tmp.select();
+        let ok = false;
+        try { ok = document.execCommand('copy'); } catch (_) {}
+        document.body.removeChild(tmp);
+        if (ok) showToast(successMsg);
+        return ok;
+      }
+
+      function renderIcon(iconBox, rawIcon) {
+        if (rawIcon && SVG_ICONS[rawIcon]) {
+          iconBox.innerHTML = SVG_ICONS[rawIcon];
+        } else {
+          iconBox.textContent = rawIcon || '✨';
+        }
+      }
+
+      function buildActivityPreview(title) {
+        const text = title || '';
+        const wrap = document.createElement('div');
+        wrap.className = 'activity-preview';
+        const box = document.createElement('div');
+        box.className = 'activity-mini-box';
+
+        if (text.includes('سيناريو') || text.includes('لو حصل')) {
+          const row = document.createElement('div');
+          row.className = 'mini-chip-row';
+          ['تغيير مفاجئ في الموعد', 'ضغط العمل', 'تنسيق الزيارات'].forEach((label) => {
+            const sp = document.createElement('span');
+            sp.className = 'mini-chip';
+            sp.textContent = label;
+            row.appendChild(sp);
+          });
+          box.appendChild(row);
+        } else if (text.includes('أولويات') || text.includes('رتّب')) {
+          ['الادخار والطوارئ', 'الوقت المشترك الهادئ', 'تنظيم الالتزامات'].forEach((label, idx) => {
+            const row = document.createElement('div');
+            row.className = 'mini-rank-item';
+            const num = document.createElement('span');
+            num.className = 'mini-rank-num';
+            num.textContent = String(idx + 1);
+            const txt = document.createElement('span');
+            txt.textContent = label;
+            row.append(num, txt);
+            box.appendChild(row);
+          });
+        } else if (text.includes('DISC') || text.includes('أسلوبك')) {
+          const grid = document.createElement('div');
+          grid.className = 'disc-dots';
+          [
+            { label: 'مباشر وحاسم', color: '#205C4A' },
+            { label: 'ودود ومتفاعل', color: '#B58A45' },
+            { label: 'هادئ ومتأنٍ', color: '#3B7D68' },
+            { label: 'منظم ودقيق', color: '#4E6B8A' },
+          ].forEach((entry) => {
+            const pill = document.createElement('span');
+            pill.className = 'disc-dot-pill';
+            const dot = document.createElement('i');
+            dot.style.background = entry.color;
+            const txt = document.createElement('span');
+            txt.textContent = entry.label;
+            pill.append(dot, txt);
+            grid.appendChild(pill);
+          });
+          box.appendChild(grid);
+        } else {
+          return null;
+        }
+        wrap.appendChild(box);
+        return wrap;
+      }
+
+      function renderCardGrid(gridId, cards, isActivities) {
+        const grid = el(gridId);
+        if (!grid || !Array.isArray(cards) || cards.length === 0) return;
+        grid.replaceChildren();
+        cards.forEach((item, idx) => {
+          const card = document.createElement('article');
+          card.className = 'card';
+
+          const top = document.createElement('div');
+          top.className = 'card-top-row';
+          const iconBox = document.createElement('div');
+          iconBox.className = idx % 2 === 1 ? 'icon-box gold' : 'icon-box';
+          renderIcon(iconBox, item.icon);
+          const kicker = document.createElement('span');
+          kicker.className = 'card-kicker';
+          kicker.textContent = isActivities ? 'نشاط حواري' : '0' + (idx + 1);
+          top.append(iconBox, kicker);
+
+          const h3 = document.createElement('h3');
+          h3.textContent = item.title || '';
+          const p = document.createElement('p');
+          p.textContent = item.description || '';
+
+          card.append(top, h3, p);
+          if (isActivities) {
+            const preview = buildActivityPreview(item.title || '');
+            if (preview) card.appendChild(preview);
+          }
+          grid.appendChild(card);
+        });
+      }
+
+      function renderStepsGrid(steps) {
+        const grid = el('stepsGrid');
+        if (!grid || !Array.isArray(steps) || steps.length === 0) return;
+        grid.replaceChildren();
+        const tags = ['أسبوعان مجانًا', 'إغلاق تلقائي أوفلاين', 'تفعيل موقّع'];
+        steps.forEach((step, idx) => {
+          const card = document.createElement('div');
+          card.className = 'step-card';
+          const head = document.createElement('div');
+          head.className = 'step-head';
+          const num = document.createElement('div');
+          num.className = 'step-num';
+          num.textContent = '0' + (idx + 1);
+          const tag = document.createElement('span');
+          tag.className = 'step-tag';
+          tag.textContent = tags[idx] || ('خطوة ' + (idx + 1));
+          head.append(num, tag);
+
+          const h3 = document.createElement('h3');
+          h3.textContent = step.title || '';
+          const p = document.createElement('p');
+          p.textContent = step.description || '';
+          card.append(head, h3, p);
+          grid.appendChild(card);
+        });
+      }
+
+      function renderFaqItems(items) {
+        const list = el('faqList');
+        if (!list || !Array.isArray(items) || items.length === 0) return;
+        list.replaceChildren();
+        items.forEach((item, idx) => {
+          const details = document.createElement('details');
+          details.className = 'faq-item';
+          if (idx === 0) details.open = true;
+          const sum = document.createElement('summary');
+          const sumText = document.createElement('span');
+          sumText.textContent = item.question || '';
+          const plus = document.createElement('span');
+          plus.className = 'faq-plus';
+          plus.setAttribute('aria-hidden', 'true');
+          plus.textContent = '+';
+          sum.append(sumText, plus);
+          const p = document.createElement('p');
+          p.textContent = item.answer || '';
+          details.append(sum, p);
+          list.appendChild(details);
+        });
+      }
+
+      function renderStringBullets(listId, items, kind) {
+        const ul = el(listId);
+        if (!ul || !Array.isArray(items) || items.length === 0) return;
+        ul.replaceChildren();
+        for (const text of items) {
+          const li = document.createElement('li');
+          const icon = document.createElement('span');
+          icon.className = 'boundary-icon ' + kind;
+          icon.setAttribute('aria-hidden', 'true');
+          icon.textContent = kind === 'yes' ? '✓' : '×';
+          const span = document.createElement('span');
+          span.textContent = text;
+          li.append(icon, span);
+          ul.appendChild(li);
+        }
+      }
+
+      function renderSamples() {
+        const grid = el('samplesGrid');
+        if (!grid) return;
+        grid.replaceChildren();
+        const items = SAMPLE_BANK[state.topic] || [];
+        items.forEach((item, idx) => {
+          const card = document.createElement('article');
+          card.className = 'sample-card';
+
+          const meta = document.createElement('div');
+          meta.className = 'sample-meta';
+          const indexBadge = document.createElement('span');
+          indexBadge.className = 'sample-index';
+          indexBadge.textContent = 'سؤال 0' + (idx + 1);
+
+          const copyBtn = document.createElement('button');
+          copyBtn.type = 'button';
+          copyBtn.className = 'sample-copy-btn';
+          copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>نسخ</span>';
+          copyBtn.addEventListener('click', () => {
+            copyTextSafe(item.q, 'تم نسخ السؤال — يمكنك مشاركته لبدء الحوار');
+          });
+          meta.append(indexBadge, copyBtn);
+
+          const q = document.createElement('div');
+          q.className = 'sample-q';
+          q.textContent = item.q;
+
+          const c = document.createElement('div');
+          c.className = 'sample-c';
+          const cTitle = document.createElement('strong');
+          cTitle.textContent = 'الهدف من السؤال';
+          const cBody = document.createElement('span');
+          cBody.textContent = item.c;
+          c.append(cTitle, cBody);
+
+          card.append(meta, q, c);
+          grid.appendChild(card);
+        });
+      }
+
+      function renderReasonChips() {
+        const select = el('contactReason');
+        const container = el('contactReasonChips');
+        if (!select || !container) return;
+        container.replaceChildren();
+        Array.from(select.options).forEach((opt) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'reason-chip' + (select.value === opt.value ? ' active' : '');
+          btn.textContent = opt.textContent;
+          btn.setAttribute('aria-pressed', String(select.value === opt.value));
+          btn.addEventListener('click', () => {
+            select.value = opt.value;
+            renderReasonChips();
+            syncContactPreview();
+          });
+          container.appendChild(btn);
+        });
+      }
+
+      function buildContactMessage() {
+        const reason = el('contactReason').value;
+        const name = el('contactName').value.trim();
+        const instId = el('contactInstId').value.trim();
+        const notes = el('contactNotes').value.trim();
+
+        const lines = [
+          state.baseTemplate || 'السلام عليكم، أود التواصل مع فريق وفاق:',
+          '- الموضوع: ' + reason,
+        ];
+        if (name) lines.push('- الاسم: ' + name);
+        if (instId) lines.push('- معرّف التثبيت: ' + instId);
+        if (notes) lines.push('- التفاصيل: ' + notes);
+        return lines.join('\n');
+      }
+
+      function syncContactPreview() {
+        const message = buildContactMessage();
+        el('messagePreview').textContent = message;
+
+        const encoded = encodeURIComponent(message);
+        const waTarget = state.whatsappNumber
+          ? 'https://wa.me/' + state.whatsappNumber + '?text=' + encoded
+          : 'https://wa.me/?text=' + encoded;
+        el('whatsappSendBtn').href = waTarget;
+
+        const subject = encodeURIComponent('تواصل وفاق: ' + el('contactReason').value);
+        el('emailSendBtn').href = 'mailto:' + state.email + '?subject=' + subject + '&body=' + encoded;
+      }
+
+      function updateInstIdHint() {
+        const val = el('contactInstId').value.trim();
+        const hint = el('instIdHint');
+        const label = hint.querySelector('span');
+        if (!label) return;
+        if (val.startsWith('inst_') && val.length >= 12) {
+          hint.classList.add('valid');
+          label.textContent = '✓ تم التعرف على صيغة معرّف التثبيت';
+        } else {
+          hint.classList.remove('valid');
+          label.textContent = 'تجده في التطبيق داخل شاشة التفعيل أو الدعم.';
+        }
+      }
+
+      function setTextIfPresent(id, value) {
+        if (typeof value === 'string' && value.trim().length > 0 && el(id)) {
+          el(id).textContent = value.trim();
+        }
+      }
+
+      function setSectionVisibility(sectionId, navHash, visible) {
+        if (el(sectionId)) el(sectionId).style.display = visible ? '' : 'none';
+        if (navHash) {
+          document.querySelectorAll('a[href="' + navHash + '"]').forEach((link) => {
+            link.style.display = visible ? '' : 'none';
+          });
+        }
+      }
+
+      // Hero interactive phone preview controls
+      function getFlattenedPreviewPool() {
+        const pool = [];
+        for (const topicKey of Object.keys(SAMPLE_BANK)) {
+          const list = SAMPLE_BANK[topicKey] || [];
+          for (const item of list) {
+            pool.push({
+              topic: TOPIC_LABELS[topicKey] || 'حوار',
+              q: item.q,
+              c: item.c,
+            });
+          }
+        }
+        return pool;
+      }
+
+      function cycleMockupQuestion() {
+        const pool = getFlattenedPreviewPool();
+        if (pool.length === 0) return;
+        state.previewIndex = (state.previewIndex + 1) % pool.length;
+        const next = pool[state.previewIndex];
+        const card = el('phonePreviewCard');
+        card.classList.add('is-switching');
+        setTimeout(() => {
+          el('mockupTopicTag').textContent = next.topic;
+          el('mockupQuestion').textContent = next.q;
+          el('mockupClarify').textContent = next.c;
+          card.classList.remove('is-switching');
+        }, 140);
+      }
+
+      el('mockupNextBtn').addEventListener('click', cycleMockupQuestion);
+      el('mockupCopyBtn').addEventListener('click', () => {
+        const q = el('mockupQuestion').textContent.trim();
+        if (q) copyTextSafe(q, 'تم نسخ سؤال المعاينة');
+      });
+
+      document.querySelectorAll('[data-preview-mode]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const mode = btn.dataset.previewMode;
+          document.querySelectorAll('[data-preview-mode]').forEach((b) => {
+            const active = b === btn;
+            b.classList.toggle('active', active);
+            const dot = b.querySelector('strong span:last-child');
+            if (dot) dot.textContent = active ? '●' : '○';
+          });
+          el('mockupSessionTag').textContent = mode === 'call' ? 'جلسة عبر مكالمة' : 'مساحة للحوار معًا';
+          el('mockupModeBadge').textContent = mode === 'call' ? 'وضع المكالمة' : 'حوار يقرّب الفهم';
+        });
+      });
+
+      // Topic tabs
+      document.querySelectorAll('.topic-tab').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.topic = btn.dataset.topic;
+          document.querySelectorAll('.topic-tab').forEach((b) => {
+            const active = b === btn;
+            b.classList.toggle('active', active);
+            b.setAttribute('aria-selected', String(active));
+          });
+          renderSamples();
+        });
+      });
+
+      // Contact form events
+      ['contactReason', 'contactName', 'contactInstId', 'contactNotes'].forEach((id) => {
+        el(id).addEventListener('input', () => {
+          if (id === 'contactInstId') updateInstIdHint();
+          syncContactPreview();
+        });
+        el(id).addEventListener('change', () => {
+          if (id === 'contactReason') renderReasonChips();
+          syncContactPreview();
+        });
+      });
+
+      el('pasteInstIdBtn').addEventListener('click', async () => {
+        try {
+          if (navigator.clipboard && navigator.clipboard.readText) {
+            const text = (await navigator.clipboard.readText()).trim();
+            if (text) {
+              el('contactInstId').value = text;
+              updateInstIdHint();
+              syncContactPreview();
+              showToast('تم لصق النص من الحافظة');
+              return;
+            }
+          }
+        } catch (_) {}
+        el('contactInstId').focus();
+        showToast('ألصق معرّف التثبيت يدويًا داخل الحقل');
+      });
+
+      el('addSecondDeviceBtn').addEventListener('click', () => {
+        const notes = el('contactNotes');
+        const prefix = 'معرّف الجهاز الثاني: ';
+        if (!notes.value.includes(prefix)) {
+          notes.value = (notes.value.trim() ? notes.value.trim() + '\n' : '') + prefix;
+        }
+        notes.focus();
+        syncContactPreview();
+      });
+
+      el('copyContactMsgBtn').addEventListener('click', () => {
+        copyTextSafe(buildContactMessage(), 'تم نسخ رسالة التواصل بنجاح');
+      });
+
+      el('copyEmailBtn').addEventListener('click', () => {
+        copyTextSafe(state.email, 'تم نسخ البريد الإلكتروني');
+      });
+
+      // Navigation & scroll state
+      el('menuToggleBtn').addEventListener('click', () => {
+        const drawer = el('mobileDrawer');
+        const open = drawer.classList.toggle('open');
+        el('menuToggleBtn').setAttribute('aria-expanded', String(open));
+      });
+      document.querySelectorAll('#mobileDrawer a').forEach((a) => {
+        a.addEventListener('click', () => {
+          el('mobileDrawer').classList.remove('open');
+          el('menuToggleBtn').setAttribute('aria-expanded', 'false');
+        });
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          el('mobileDrawer').classList.remove('open');
+          el('menuToggleBtn').setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      window.addEventListener('scroll', () => {
+        el('navShell').classList.toggle('scrolled', window.scrollY > 18);
+      }, { passive: true });
+
+      const sectionNavLinks = document.querySelectorAll('#navLinks a[href^="#"]');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            const id = '#' + entry.target.id;
+            sectionNavLinks.forEach((link) => {
+              link.classList.toggle('active', link.getAttribute('href') === id);
+            });
+          }
+        }, { rootMargin: '-35% 0px -55% 0px' });
+        ['features', 'explorer', 'activities', 'how-it-works', 'faq', 'contact'].forEach((id) => {
+          if (el(id)) observer.observe(el(id));
+        });
+      }
+
+      async function hydrateFromPublicConfig() {
+        const candidates = [];
+        const isHttp = window.location.protocol.startsWith('http');
+        if (isHttp && window.location.hostname === 'wefaq-questions-api.vercel.app') {
+          candidates.push('/v1/app-config');
+        } else {
+          candidates.push('https://wefaq-questions-api.vercel.app/v1/app-config');
+          if (isHttp) candidates.push('/v1/app-config');
+        }
+
+        let cfg = null;
+        for (const endpoint of candidates) {
+          try {
+            const ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+            const timer = ctrl ? setTimeout(() => ctrl.abort(), 2500) : null;
+            const res = await fetch(endpoint, {
+              headers: { Accept: 'application/json' },
+              cache: 'no-store',
+              ...(ctrl ? { signal: ctrl.signal } : {}),
+            });
+            if (timer) clearTimeout(timer);
+            const ctype = res.headers.get('content-type') || '';
+            if (!res.ok || !ctype.includes('application/json')) continue;
+            cfg = await res.json();
+            break;
+          } catch (_) {
+            // Keep bundled offline defaults seamlessly.
+          }
+        }
+        if (!cfg) return;
+
+        try {
+          if (cfg.announcement && cfg.announcement.enabled && cfg.announcement.message) {
+            const bar = el('announcementBar');
+            bar.classList.remove('style-info', 'style-warning', 'style-success');
+            if (cfg.announcement.style) bar.classList.add('style-' + cfg.announcement.style);
+            setTextIfPresent('announcementTitle', cfg.announcement.title || 'تنبيه');
+            setTextIfPresent('announcementMessage', cfg.announcement.message);
+            bar.classList.add('show');
+          }
+
+          if (cfg.branding) {
+            const badgeText = cfg.branding.badgeText;
+            if (typeof badgeText === 'string' && badgeText.trim()) {
+              el('heroBadge').querySelector('span:last-child').textContent = badgeText.trim();
+            }
+            setTextIfPresent('heroTitle', cfg.branding.heroTitle);
+            setTextIfPresent('heroSubtitle', cfg.branding.heroSubtitle);
+            setTextIfPresent('siteNoticeText', cfg.branding.siteNotice);
+          }
+
+          if (cfg.contact) {
+            state.whatsappNumber = cfg.contact.whatsappNumber || '';
+            if (cfg.contact.email) {
+              state.email = cfg.contact.email;
+              el('supportEmailText').textContent = cfg.contact.email;
+            }
+            setTextIfPresent('supportHoursText', cfg.contact.supportHours);
+            setTextIfPresent('whatsappBtnLabel', cfg.contact.whatsappDisplay);
+            if (cfg.contact.contactMessageTemplate) {
+              state.baseTemplate = cfg.contact.contactMessageTemplate;
+            }
+            const tgBtn = el('telegramSendBtn');
+            if (cfg.contact.telegramUrl && cfg.contact.telegramUrl.startsWith('https://')) {
+              tgBtn.href = cfg.contact.telegramUrl;
+              setTextIfPresent('telegramBtnLabel', cfg.contact.telegramDisplay || 'تواصل عبر تيليجرام');
+              tgBtn.style.display = 'inline-flex';
+            } else {
+              tgBtn.style.display = 'none';
+            }
+            if (cfg.contact.phoneDisplay) {
+              el('supportPhoneText').textContent = cfg.contact.phoneDisplay;
+              el('supportPhoneRow').style.display = 'flex';
+            } else {
+              el('supportPhoneRow').style.display = 'none';
+            }
+          }
+
+          const dlBtn = el('heroDownloadBtn');
+          const verChip = el('appVersionChip');
+          if (cfg.appRelease && cfg.appRelease.downloadUrl && cfg.appRelease.downloadUrl.startsWith('https://')) {
+            dlBtn.href = cfg.appRelease.downloadUrl;
+            dlBtn.style.display = 'inline-flex';
+            if (cfg.appRelease.latestVersion) {
+              verChip.textContent = 'Android v' + cfg.appRelease.latestVersion;
+              verChip.style.display = 'inline-flex';
+            }
+          } else {
+            dlBtn.style.display = 'none';
+            verChip.style.display = 'none';
+          }
+
+          if (cfg.site) {
+            const site = cfg.site;
+            if (site.meta) {
+              if (site.meta.pageTitle) document.title = site.meta.pageTitle;
+              setTextIfPresent('navBrandName', site.meta.brandName);
+              setTextIfPresent('mockupBrandName', site.meta.brandName);
+              setTextIfPresent('footerText', site.meta.footerText);
+            }
+            if (site.hero) {
+              if (site.hero.primaryCtaLabel) {
+                el('heroPrimaryCta').querySelector('span').textContent = site.hero.primaryCtaLabel;
+              }
+              if (site.hero.secondaryCtaLabel) {
+                el('heroSecondaryCta').querySelector('span').textContent = site.hero.secondaryCtaLabel;
+              }
+              setTextIfPresent('heroDownloadLabel', site.hero.downloadCtaLabel);
+              setTextIfPresent('mockupTitle', site.hero.mockupTitle);
+              setTextIfPresent('mockupSubtitle', site.hero.mockupSubtitle);
+              setTextIfPresent('mockupQuestion', site.hero.mockupQuestion);
+              setTextIfPresent('mockupClarify', site.hero.mockupClarify);
+              if (Array.isArray(site.hero.trustPills) && site.hero.trustPills.length > 0) {
+                const strip = el('trustStrip');
+                strip.replaceChildren();
+                site.hero.trustPills.forEach((pillText, idx) => {
+                  const sp = document.createElement('span');
+                  sp.className = 'trust-pill';
+                  sp.innerHTML = TRUST_SVGS[idx % TRUST_SVGS.length];
+                  const txt = document.createElement('span');
+                  txt.textContent = String(pillText).replace(/^✓\s*/, '');
+                  sp.appendChild(txt);
+                  strip.appendChild(sp);
+                });
+              }
+            }
+            if (site.sections) {
+              const s = site.sections;
+              const setBadgeLabel = (id, text) => {
+                if (typeof text === 'string' && text.trim() && el(id)) {
+                  const span = el(id).querySelector('span:last-child');
+                  if (span) span.textContent = text.trim();
+                }
+              };
+              setSectionVisibility('features', '#features', s.showFeatures !== false);
+              setBadgeLabel('featuresBadge', s.featuresBadge);
+              setTextIfPresent('featuresTitle', s.featuresTitle);
+              setTextIfPresent('featuresSubtitle', s.featuresSubtitle);
+
+              setSectionVisibility('explorer', '#explorer', s.showExplorer !== false);
+              setBadgeLabel('explorerBadge', s.explorerBadge);
+              setTextIfPresent('explorerTitle', s.explorerTitle);
+              setTextIfPresent('explorerSubtitle', s.explorerSubtitle);
+
+              setSectionVisibility('activities', '#activities', s.showActivities !== false);
+              setBadgeLabel('activitiesBadge', s.activitiesBadge);
+              setTextIfPresent('activitiesTitle', s.activitiesTitle);
+              setTextIfPresent('activitiesSubtitle', s.activitiesSubtitle);
+
+              setSectionVisibility('how-it-works', '#how-it-works', s.showHowItWorks !== false);
+              setBadgeLabel('howBadge', s.howItWorksBadge);
+              setTextIfPresent('howTitle', s.howItWorksTitle);
+              setTextIfPresent('howSubtitle', s.howItWorksSubtitle);
+
+              setSectionVisibility('contact', '#contact', s.showContact !== false);
+              setBadgeLabel('contactBadge', s.contactBadge);
+              setTextIfPresent('contactTitle', s.contactTitle);
+              setTextIfPresent('contactSubtitle', s.contactSubtitle);
+
+              setSectionVisibility('faq', '#faq', s.showFaq !== false);
+              setBadgeLabel('faqBadge', s.faqBadge);
+              setTextIfPresent('faqTitle', s.faqTitle);
+
+              setSectionVisibility('boundariesSection', null, s.showBoundaries !== false);
+            }
+            renderCardGrid('featuresGrid', site.featuresCards, false);
+            renderCardGrid('activitiesGrid', site.activitiesCards, true);
+            renderStepsGrid(site.steps);
+            renderFaqItems(site.faq);
+            if (site.contactForm) {
+              const cf = site.contactForm;
+              setTextIfPresent('previewHeading', cf.previewHeading);
+              setTextIfPresent('previewHint', cf.previewHint);
+              if (cf.namePlaceholder) el('contactName').placeholder = cf.namePlaceholder;
+              if (cf.notesPlaceholder) el('contactNotes').placeholder = cf.notesPlaceholder;
+              if (Array.isArray(cf.reasons) && cf.reasons.length > 0) {
+                const select = el('contactReason');
+                const previous = select.value;
+                select.replaceChildren();
+                for (const r of cf.reasons) {
+                  const opt = document.createElement('option');
+                  opt.value = r;
+                  opt.textContent = r;
+                  select.appendChild(opt);
+                }
+                if (cf.reasons.includes(previous)) select.value = previous;
+                renderReasonChips();
+              }
+            }
+            if (site.boundaries) {
+              setTextIfPresent('whatIsTitle', site.boundaries.whatIsTitle);
+              renderStringBullets('whatIsList', site.boundaries.whatIsItems, 'yes');
+              setTextIfPresent('whatIsNotTitle', site.boundaries.whatIsNotTitle);
+              renderStringBullets('whatIsNotList', site.boundaries.whatIsNotItems, 'no');
+            }
+            if (site.sampleQuestions) {
+              for (const topicKey of Object.keys(site.sampleQuestions)) {
+                const list = site.sampleQuestions[topicKey];
+                if (Array.isArray(list) && list.length > 0) {
+                  SAMPLE_BANK[topicKey] = list.map((item) => ({
+                    q: item.question || '',
+                    c: item.clarification || '',
+                  }));
+                }
+              }
+            }
+          }
+          renderSamples();
+          syncContactPreview();
+        } catch (_) {
+          renderSamples();
+        }
+      }
+
+      // Initial instant render from bundled defaults (zero blocking)
+      renderCardGrid('featuresGrid', DEFAULT_FEATURES, false);
+      renderCardGrid('activitiesGrid', DEFAULT_ACTIVITIES, true);
+      renderStepsGrid(DEFAULT_STEPS);
+      renderFaqItems(DEFAULT_FAQ);
+      renderStringBullets('whatIsList', DEFAULT_WHAT_IS, 'yes');
+      renderStringBullets('whatIsNotList', DEFAULT_WHAT_IS_NOT, 'no');
+      renderSamples();
+      renderReasonChips();
+      syncContactPreview();
+      void hydrateFromPublicConfig();
+    })();
+  </script>
 </body>
 </html>

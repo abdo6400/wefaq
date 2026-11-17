@@ -23,10 +23,18 @@ class JsonAssetQuestionRepository implements QuestionRepository {
   final Random _random;
 
   List<Question>? _cachedQuestions;
+  int _generation = 0;
+
+  void invalidateCache() {
+    _generation++;
+    _cachedQuestions = null;
+  }
 
   /// Loads and caches questions from the JSON asset catalog.
   Future<List<Question>> loadQuestions() async {
     if (_cachedQuestions != null) return _cachedQuestions!;
+    final generation = _generation;
+    List<Question> loaded;
 
     try {
       final jsonString = _loader != null
@@ -35,28 +43,27 @@ class JsonAssetQuestionRepository implements QuestionRepository {
 
       final decoded = jsonDecode(jsonString);
       if (decoded is! Map<String, dynamic>) {
-        _cachedQuestions = prototypeQuestions;
-        return _cachedQuestions!;
-      }
+        loaded = prototypeQuestions;
+      } else {
+        final rawList = decoded['questions'] as List<dynamic>? ?? const [];
+        final parsed = <Question>[];
 
-      final rawList = decoded['questions'] as List<dynamic>? ?? const [];
-      final parsed = <Question>[];
-
-      for (final item in rawList) {
-        if (item is Map<String, dynamic>) {
-          try {
-            parsed.add(Question.fromJson(item));
-          } catch (_) {
-            // Ignore malformed individual question entry
+        for (final item in rawList) {
+          if (item is Map<String, dynamic>) {
+            try {
+              parsed.add(Question.fromJson(item));
+            } catch (_) {
+              // Ignore malformed individual bundled question entry.
+            }
           }
         }
+        loaded = parsed.isNotEmpty ? parsed : prototypeQuestions;
       }
-
-      _cachedQuestions = parsed.isNotEmpty ? parsed : prototypeQuestions;
     } catch (_) {
-      _cachedQuestions = prototypeQuestions;
+      loaded = prototypeQuestions;
     }
-
+    if (generation != _generation) return loadQuestions();
+    _cachedQuestions = loaded;
     return _cachedQuestions!;
   }
 

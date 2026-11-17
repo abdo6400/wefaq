@@ -1,5 +1,9 @@
 # Wefaq Store Release Readiness, Data Safety & Production Guide
 
+> **Draft only:** This document predates the current open-access app and DISC
+> notes. Claims below about subscriptions, data handling, and release readiness
+> require a fresh technical, legal, and store-policy review before publication.
+
 **Date:** 12 November 2026  
 **Application Title:** وفاق: حوارات مقبلين على الزواج (Wefaq)  
 **Package Identifier:** `com.wefaq.wefaq` (Placeholder until production domain registration)  

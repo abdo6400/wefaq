@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -6,6 +7,32 @@ import 'package:wefaq/features/sessions/data/json_asset_question_repository.dart
 import 'package:wefaq/features/sessions/domain/models/question.dart';
 
 void main() {
+  test(
+    'invalidating during a load does not leave stale questions cached',
+    () async {
+      final first = Completer<String>();
+      var calls = 0;
+      String payload(String text) => jsonEncode({
+        'questions': [
+          {
+            'id': 'q1',
+            'text': text,
+            'topic': 'communication',
+            'depth': 'introductory',
+          },
+        ],
+      });
+      final repo = JsonAssetQuestionRepository(
+        customLoader: () =>
+            calls++ == 0 ? first.future : Future.value(payload('new')),
+      );
+      final pending = repo.loadQuestions();
+      repo.invalidateCache();
+      first.complete(payload('old'));
+      expect((await pending).single.text, 'new');
+      expect((await repo.loadQuestions()).single.text, 'new');
+    },
+  );
   group('Question JSON Model', () {
     test('Question toJson and fromJson preserve all domain attributes', () {
       const original = Question(
